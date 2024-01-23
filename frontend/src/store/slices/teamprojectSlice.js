@@ -9,7 +9,7 @@ export const parseProjects = createAsyncThunk(
                 throw new Error("Необходимо вставить Bearer-токен!");
 
             let response = await fetch(
-                "https://fantastic-blancmange-5dae15.netlify.app/api/teamproject",
+                "https://flourishing-squirrel-3ed9ae.netlify.app/api/teamproject",
                 {
                     method: 'post',
                     headers: {
