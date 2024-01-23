@@ -1,0 +1,11 @@
+.mainLayout {
+    background-color: var(--service-backround-color);
+    margin: 0 0 0 60px;
+}
+
+.mainLayout__app {
+    padding: 20px 40px;
+    width: calc(100vw - 60px);
+    height: 100vh;
+    overflow: scroll;
+}

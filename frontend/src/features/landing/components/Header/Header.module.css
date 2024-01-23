@@ -1,0 +1,216 @@
+:root {
+    --navbar-bg-color: rgba(32, 32, 35, 0.76);
+    --navbar-text-color: hsl(0, 0%, 85%);
+    --navbar-text-color-focus: white;
+    --navbar-bg-contrast: hsl(0, 0%, 25%);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    font-family: SFPro, serif;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 928px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    box-sizing: content-box;
+}
+
+.navbar {
+    z-index: 1000;
+    --navbar-height: 64px;
+    position: sticky;
+    top: 0;
+    /*margin-bottom: 30px;*/
+    height: var(--navbar-height);
+    background-color: var(--on-surface-color);
+    left: 0;
+    right: 0;
+    backdrop-filter: blur(10px);
+}
+
+.navbarContainer {
+    z-index: 10000;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-between;
+    height: 100%;
+    align-items: center;
+
+    max-width: 928px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbarLastContainer {
+    justify-self: end;
+}
+
+.navbarItem {
+}
+
+.homeLink,
+.navbarLink {
+    color: var(--text-color);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    gap: 5px;
+
+    font-family: SFPro, serif;
+    font-weight: 500;
+}
+
+.homeLink:is(:focus, :hover) {
+    color: var(--navbar-text-color-focus);
+}
+
+.navbarLink {
+    justify-content: center;
+    width: 100%;
+    padding: 0.3em 0.6em;
+    border-radius: 5px;
+}
+
+.navbarLink:is(:focus, :hover) {
+    color: var(--navbar-text-color-focus);
+    background-color: var(--navbar-bg-contrast);
+}
+
+.navbarLogo {
+    width: 50px;
+    height: 50px;
+    margin-right: 0.5em;
+    justify-content: center;
+    display: flex;
+}
+
+.navbarToggle {
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.icon-bar {
+    display: block;
+    width: 25px;
+    height: 4px;
+    margin: 2px;
+    background-color: var(--navbar-text-color);
+}
+
+.navbarToggle:is(:focus, :hover) .iconBar {
+    background-color: var(--navbar-text-color-focus);
+}
+
+.navbarToggle[aria-expanded="true"] .iconBar:is(:first-child, :last-child) {
+    position: absolute;
+    margin: 0;
+    width: 30px;
+}
+
+.navbarToggle[aria-expanded="true"] .iconBar:first-child {
+    transform: rotate(45deg);
+}
+
+.navbarToggle[aria-expanded="true"] .iconBar:nth-child(2) {
+    opacity: 0;
+}
+
+.navbarToggle[aria-expanded="true"] .iconBar:last-child {
+    transform: rotate(-45deg);
+}
+
+.navbarMenu {
+    position: fixed;
+    top: var(--navbar-height);
+    bottom: 0;
+    opacity: 0;
+    visibility: hidden;
+    left: 0;
+    right: 0;
+}
+
+.navbarToggle[aria-expanded="true"] + .navbarMenu {
+    background-color: rgba(0, 0, 0, 0.4);
+    /*opacity: 1;*/
+    visibility: visible;
+}
+
+.navbarLinks {
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    position: absolute;
+    /*backdrop-filter: blur(10px);*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: 0;
+    right: 0;
+    margin: 1.4rem;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+}
+
+.navbarToggle[aria-expanded="true"] + .navbarMenu .navbarLinks {
+    padding: 1em;
+}
+
+.navbarToggle,
+.navbarToggle[aria-expanded="true"] {
+    display: none;
+}
+
+.navbarMenu,
+.navbarToggle[aria-expanded="true"] .navbarMenu {
+    visibility: visible;
+    opacity: 1;
+    position: static;
+    display: block;
+    height: 100%;
+}
+
+.navbarLinks,
+.navbarToggle[aria-expanded="true"] .navbarMenu .navbarLinks {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    position: static;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.profile {
+    margin: auto;
+}
+
+.navbarLink__highlight {
+    background: #1677ff;
+    color: white;
+}
+
+
+.navbarLink__highlight:hover {
+    background: rgba(22, 119, 255, 0.8);
+}
