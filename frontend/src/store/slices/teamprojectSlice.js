@@ -8,63 +8,63 @@ export const parseProjects = createAsyncThunk(
             if (!data.token)
                 throw new Error("Необходимо вставить Bearer-токен!");
 
-            let returnResult = []
-            let myHeaders = new Headers();
-            myHeaders.append("Authorization", "Bearer " + data.token);
-
-            let requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-            };
-
-            let periods = await fetch("https://teamproject.urfu.ru/api/v2/periods", requestOptions)
-                .then(response => response.json())
-                .then(result => result)
-                .catch(error => console.log('error', error));
-
-            let projects = []
-
-            for (const period of periods.periods) {
-                let localProjects = await fetch(
-                    "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + period.year + "&semester=" + period.term + "&size=10000&page=1", requestOptions)
-                    .then(response => response.json())
-                    .then(result => result)
-                    .catch(error => console.log('error', error))
-                console.log(period, projects.length)
-                projects.push(...localProjects.items)
-            }
-
-            let i = 0
-            for (const project of projects) {
-                let details = {}
-                let results = {}
-                let documents = {}
-                let team = {}
-                console.log(i)
-                i += 1;
-
-                await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/documents/results", requestOptions)
-                    .then(response => response.json())
-                    .then(result => documents = result)
-                    .catch(error => console.log('error', error));
-
-                await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/details", requestOptions)
-                    .then(response => response.json())
-                    .then(result => details = result)
-                    .catch(error => console.log('error', error));
-
-                await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/result", requestOptions)
-                    .then(response => response.json())
-                    .then(result => results = result)
-                    .catch(error => console.log('error', error));
-
-                await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/team", requestOptions)
-                    .then(response => response.json())
-                    .then(result => team = result)
-                    .catch(error => console.log('error', error));
-
-                returnResult.push({project, details, results, documents, team})
-            }
+            // let returnResult = []
+            // let myHeaders = new Headers();
+            // myHeaders.append("Authorization", "Bearer " + data.token);
+            // let requestOptions = {
+            //     method: 'GET',
+            //     headers: myHeaders,
+            //     redirect: 'follow'
+            // };
+            //
+            // let periods = await fetch("https://teamproject.urfu.ru/api/v2/periods", requestOptions)
+            //     .then(response => response.json())
+            //     .then(result => result)
+            //     .catch(error => console.log('error', error));
+            //
+            // let projects = []
+            //
+            // for (const period of periods.periods) {
+            //     let localProjects = await fetch(
+            //         "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + period.year + "&semester=" + period.term + "&size=10000&page=1", requestOptions)
+            //         .then(response => response.json())
+            //         .then(result => result)
+            //         .catch(error => console.log('error', error))
+            //     console.log(period, projects.length)
+            //     projects.push(...localProjects.items)
+            // }
+            //
+            // let i = 0
+            // for (const project of projects) {
+            //     let details = {}
+            //     let results = {}
+            //     let documents = {}
+            //     let team = {}
+            //     console.log(i)
+            //     i += 1;
+            //
+            //     await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/documents/results", requestOptions)
+            //         .then(response => response.json())
+            //         .then(result => documents = result)
+            //         .catch(error => console.log('error', error));
+            //
+            //     await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/details", requestOptions)
+            //         .then(response => response.json())
+            //         .then(result => details = result)
+            //         .catch(error => console.log('error', error));
+            //
+            //     await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/result", requestOptions)
+            //         .then(response => response.json())
+            //         .then(result => results = result)
+            //         .catch(error => console.log('error', error));
+            //
+            //     await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/team", requestOptions)
+            //         .then(response => response.json())
+            //         .then(result => team = result)
+            //         .catch(error => console.log('error', error));
+            //
+            //     returnResult.push({project, details, results, documents, team})
+            // }
             // return returnResult;
 
 
@@ -87,26 +87,26 @@ export const parseProjects = createAsyncThunk(
 
 
 
-            // let response = await fetch(
-            //     "https://pp-manager.vercel.app/api/teamproject",
-            //     {
-            //         method: 'post',
-            //         headers: {
-            //             "Content-Type": "application/json"
-            //         },
-            //         body: JSON.stringify(data)
-            //     }
-            // );
-            //
-            // if (!response.ok) {
-            //     throw new Error("Ошибка сервера!");
-            // }
-            //
-            // response = await response.json()
-            localStorage.setItem("PP-analyze-projects", JSON.stringify(returnResult))
-            dispatch(setTeamproject(returnResult))
+            let response = await fetch(
+                "https://pp-manager.vercel.app/api/teamproject",
+                {
+                    method: 'post',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }
+            );
 
-            return returnResult;
+            if (!response.ok) {
+                throw new Error("Ошибка сервера!");
+            }
+
+            response = await response.json()
+            localStorage.setItem("PP-analyze-projects", JSON.stringify(response))
+            dispatch(setTeamproject(response))
+
+            return response;
         } catch (error) {
             return rejectWithValue(error.message);
         }
