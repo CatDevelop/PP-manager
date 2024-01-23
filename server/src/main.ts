@@ -5,10 +5,10 @@ import cors from 'cors'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.setGlobalPrefix('api');
-    app.use(cors({
-        credentials: true,
-        origin: true
-    }))
+    app.enableCors({
+        //Add your origins here
+        origin: "https://pp-manager.netlify.app",
+    });
     await app.listen(5000);
 }
 
