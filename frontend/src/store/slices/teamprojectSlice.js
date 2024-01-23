@@ -105,9 +105,9 @@ export const parseProjects = createAsyncThunk(
 
             response = await response.json()
             localStorage.setItem("PP-analyze-projects", JSON.stringify(response))
-            dispatch(setTeamproject(periods))
+            dispatch(setTeamproject(response))
 
-            return periods;
+            return response;
         } catch (error) {
             return rejectWithValue(error.message);
         }
