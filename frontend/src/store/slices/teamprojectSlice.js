@@ -22,6 +22,7 @@ export const parseProjects = createAsyncThunk(
             //     .then(result => result)
             //     .catch(error => console.log('error', error));
             //
+            // console.log(periods)
             // let projects = []
             //
             // for (const period of periods.periods) {
@@ -88,7 +89,7 @@ export const parseProjects = createAsyncThunk(
 
 
             let response = await fetch(
-                "https://pp-manager.vercel.app/api/teamproject",
+                "http://localhost:5000/api/teamproject",
                 {
                     method: 'post',
                     headers: {
@@ -104,9 +105,9 @@ export const parseProjects = createAsyncThunk(
 
             response = await response.json()
             localStorage.setItem("PP-analyze-projects", JSON.stringify(response))
-            dispatch(setTeamproject(response))
+            dispatch(setTeamproject(periods))
 
-            return response;
+            return periods;
         } catch (error) {
             return rejectWithValue(error.message);
         }
