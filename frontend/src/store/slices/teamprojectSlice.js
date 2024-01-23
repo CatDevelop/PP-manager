@@ -14,9 +14,8 @@ export const parseProjects = createAsyncThunk(
             // let requestOptions = {
             //     method: 'GET',
             //     headers: myHeaders,
-            //     redirect: 'follow'
             // };
-            //
+
             // let periods = await fetch("https://teamproject.urfu.ru/api/v2/periods", requestOptions)
             //     .then(response => response.json())
             //     .then(result => result)
@@ -67,8 +66,8 @@ export const parseProjects = createAsyncThunk(
             //     returnResult.push({project, details, results, documents, team})
             // }
             // return returnResult;
-
-
+            //
+            //
 
 
 
@@ -89,7 +88,7 @@ export const parseProjects = createAsyncThunk(
 
 
             let response = await fetch(
-                "http://localhost:5000/api/teamproject",
+                "http://10.0.22.75:5000/api/teamproject",
                 {
                     method: 'post',
                     headers: {
