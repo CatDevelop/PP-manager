@@ -12,4 +12,10 @@ export class TeamprojectController {
     parse(@Body() parseProjectsDto: ParseTeamprojectDto) {
         return this.teamprojectService.parse(parseProjectsDto);
     }
+
+    @Post("report")
+    @UsePipes(new ValidationPipe())
+    createReport(@Body() parseProjectsDto: ParseTeamprojectDto) {
+        return this.teamprojectService.createReport(parseProjectsDto);
+    }
 }

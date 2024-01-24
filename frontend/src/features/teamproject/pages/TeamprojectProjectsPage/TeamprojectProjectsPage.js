@@ -8,6 +8,7 @@ import ParseModal from "../../components/ParseModal/ParseModal";
 import {useTeamproject} from "../../../../hooks/use-teamproject";
 import ProjectsTable from "../../components/ProjectsTable/ProjectsTable";
 import styles from './TeamprojectProjectsPage.module.css'
+import ExportButton from "../../components/ExportButton/ExportButton";
 
 export function TeamprojectProjectsPage() {
     const navigate = useNavigate()
@@ -29,6 +30,7 @@ export function TeamprojectProjectsPage() {
                 >
                     Обновить информацию
                 </Button>
+                <ExportButton projects={teamproject.projects}/>
             </div>
 
             {
