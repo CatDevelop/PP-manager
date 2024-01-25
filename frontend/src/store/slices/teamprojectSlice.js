@@ -1,4 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import API from "../../api/API";
+import {getAllProjects} from "./projectsSlice";
 
 
 export const parseProjects = createAsyncThunk(
@@ -9,7 +11,7 @@ export const parseProjects = createAsyncThunk(
                 throw new Error("Необходимо вставить Bearer-токен!");
 
             let response = await fetch(
-                "http://localhost:5000/api/teamproject",
+                    API.PARSE_PROJECTS,
                 {
                     method: 'post',
                     headers: {
@@ -20,12 +22,13 @@ export const parseProjects = createAsyncThunk(
             );
 
             if (!response.ok) {
+                if(response.status === 401)
+                    throw new Error("Неверный Bearer токен!");
                 throw new Error("Ошибка сервера!");
             }
 
             response = await response.json()
-            localStorage.setItem("PP-analyze-projects", JSON.stringify(response))
-            dispatch(setTeamproject(response))
+            dispatch(getAllProjects({year: data.year, term: data.term}))
 
             return response;
         } catch (error) {
@@ -39,7 +42,7 @@ export const createReport = createAsyncThunk(
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
-                "http://localhost:5000/api/teamproject/report",
+                "http://94.241.139.33:5000/api/teamproject/report",
                 {
                     method: 'post',
                     headers: {

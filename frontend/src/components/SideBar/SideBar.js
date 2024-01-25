@@ -21,7 +21,7 @@ export default function SideBar(props) {
         // getItem('Основная', 'Home', <HomeOutlined/>),
         // {type: 'divider'},
         getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined />),
-        getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
+        // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
 
     const onClick = (item) => {

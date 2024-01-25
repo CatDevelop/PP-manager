@@ -7,7 +7,7 @@ export class TeamprojectController {
     constructor(private readonly teamprojectService: TeamprojectService) {
     }
 
-    @Post()
+    @Post("parse")
     @UsePipes(new ValidationPipe())
     parse(@Body() parseProjectsDto: ParseTeamprojectDto) {
         return this.teamprojectService.parse(parseProjectsDto);

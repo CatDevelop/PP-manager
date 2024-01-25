@@ -13,19 +13,19 @@ export const teamprojectRoutes = [
                 path: 'teamproject/projects',
                 element: <TeamprojectProjectsPage/>
             },
-            {
-                path: 'teamproject/projects/:id',
-                element: <TeamprojectProjectPage/>
-            },
-
-            {
-                path: 'teamproject/users',
-                element: <TeamprojectUsersPage/>
-            },
-            {
-                path: 'teamproject/users/:id',
-                element: <TeamprojectUserPage/>
-            },
+            // {
+            //     path: 'teamproject/projects/:id',
+            //     element: <TeamprojectProjectPage/>
+            // },
+            //
+            // {
+            //     path: 'teamproject/users',
+            //     element: <TeamprojectUsersPage/>
+            // },
+            // {
+            //     path: 'teamproject/users/:id',
+            //     element: <TeamprojectUserPage/>
+            // },
         ]
     },
 ]

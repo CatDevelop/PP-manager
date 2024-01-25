@@ -1,4 +1,12 @@
+import {IsNumber, IsString} from "class-validator";
+
 export class ParseTeamprojectDto {
+    @IsString()
     token: string;
-    size: number;
+
+    @IsNumber()
+    year: number;
+
+    @IsNumber()
+    term: number;
 }

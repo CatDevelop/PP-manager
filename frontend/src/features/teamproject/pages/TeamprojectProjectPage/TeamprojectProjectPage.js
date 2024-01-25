@@ -9,7 +9,6 @@ import React from "react";
 
 const {Title} = Typography;
 
-
 export function TeamprojectProjectPage() {
     const {id} = useParams()
     const navigate = useNavigate()

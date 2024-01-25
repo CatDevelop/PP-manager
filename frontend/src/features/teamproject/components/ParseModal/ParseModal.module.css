@@ -1,7 +1,11 @@
 .modal {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+}
+
+.select {
+    width: 120px !important;
+    margin: 0 !important;
 }
 
 .loading {
