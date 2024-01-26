@@ -2,12 +2,12 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import API from "../../api/API";
 
 
-export const getAllProjects = createAsyncThunk(
-    'projects/all',
+export const getProject = createAsyncThunk(
+    'project/get',
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
-                `${API.GET_PROJECTS}/${data.year}/${data.term}`,
+                `${API.GET_PROJECTS}/${data.id}`,
                 {
                     method: 'get'
                 }
@@ -18,7 +18,7 @@ export const getAllProjects = createAsyncThunk(
             }
 
             response = await response.json()
-            dispatch(setProjects(response))
+            dispatch(setProject(response))
 
             return response;
         } catch (error) {
@@ -28,30 +28,30 @@ export const getAllProjects = createAsyncThunk(
 );
 
 const initialState = {
-    projects: [],
+    project: {},
     isLoading: true
 };
 
-const projectsSlice = createSlice({
-        name: 'projects',
+const projectSlice = createSlice({
+        name: 'project',
         initialState: initialState,
         reducers: {
-            setProjects(state, action) {
-                state.projects = action.payload
+            setProject(state, action) {
+                state.project = action.payload
                 state.isLoading = false;
             },
-            removeProjects(state) {
-                state.projects = []
+            removeProject(state) {
+                state.project = []
                 state.isLoading = true;
             }
         },
         extraReducers: builder => builder
-            .addCase(getAllProjects.rejected, (state, action) => {
+            .addCase(getProject.rejected, (state, action) => {
                 throw new Error(action.payload);
             })
     })
 ;
 
-export const {setProjects, removeProjects} = projectsSlice.actions;
+export const {setProject, removeProject} = projectSlice.actions;
 
-export default projectsSlice.reducer;
+export default projectSlice.reducer;

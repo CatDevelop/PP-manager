@@ -11,6 +11,7 @@ import styles from './TeamprojectProjectsPage.module.css'
 import ExportButton from "../../components/ExportButton/ExportButton";
 import {useProjects} from "../../../../hooks/use-projects";
 import {getAllProjects} from "../../../../store/slices/projectsSlice";
+import {removeProject} from "../../../../store/slices/projectSlice";
 
 export function TeamprojectProjectsPage() {
     const navigate = useNavigate()
@@ -36,6 +37,10 @@ export function TeamprojectProjectsPage() {
     useEffect(() => {
         dispatch(getAllProjects({year, term}))
     }, [year, term]);
+
+    useEffect(() => {
+        dispatch(removeProject())
+    }, []);
 
 
     // console.log(teamproject)

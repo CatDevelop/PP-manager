@@ -30,7 +30,7 @@ export default function ProjectsTable(props) {
     };
 
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters, close}) => (
             <div
                 style={{
                     padding: 8,
@@ -52,7 +52,7 @@ export default function ProjectsTable(props) {
                     <Button
                         type="primary"
                         onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
+                        icon={<SearchOutlined/>}
                         size="small"
                         style={{
                             width: 90,
@@ -82,17 +82,16 @@ export default function ProjectsTable(props) {
     return (
         <div className={styles.tableContainer}>
             <Table
-                //virtual
                 className={styles.table}
                 bordered={true}
                 dataSource={props.projects}
                 size="small"
                 scroll={{
-                    y: "75vh",
-                    x: 'max-content'
+                    y: "100%",
+                    x: false
                 }}
                 pagination={{
-                    pageSize: 7,
+                    pageSize: 30,
                     showSizeChanger: false
                 }}
             >
@@ -101,6 +100,7 @@ export default function ProjectsTable(props) {
                     width={90}
                     dataIndex="passport"
                     key="passport"
+                    {...getColumnSearchProps("passport")}
                 />
                 <Column
                     title="Название"
@@ -110,7 +110,9 @@ export default function ProjectsTable(props) {
                     render={(value, record) => {
                         return <div className={styles.nameItem}>
                             <p>{value}</p>
-                            <a href={"https://teamproject.urfu.ru/,#/"+record.id+"/about"} target="_blank"> <LinkOutlined className={styles.link}/></a>
+                            <a href={"https://teamproject.urfu.ru/,#/" + record.id + "/about"} target="_blank">
+                                <LinkOutlined className={styles.link}/>
+                            </a>
                         </div>
                     }}
                     {...getColumnSearchProps("name")}
@@ -131,10 +133,10 @@ export default function ProjectsTable(props) {
                                                 backgroundColor: "rgba(174, 126, 222, 0.6)",
                                                 cursor: "pointer"
                                             }}
-                                            >
-                                        {student.fullname.split(" ")[0][0]}{student.fullname.split(" ")[1][0]}
-                                    </Avatar>
-                                </Tooltip>
+                                        >
+                                            {student.fullname.split(" ")[0][0]}{student.fullname.split(" ")[1][0]}
+                                        </Avatar>
+                                    </Tooltip>
                                 })
                             }
 
@@ -156,7 +158,7 @@ export default function ProjectsTable(props) {
                         return value ? "Да" : "Нет"
                     }}
                     filters={[{text: "Да", value: true}, {text: "Нет", value: false},]}
-                    onFilter={(value, record) => record.isHaveReport.indexOf(value) === 0}
+                    onFilter={(value, record) => record.isHaveReport === value}
                 />
                 <Column
                     title="Презентация"
@@ -166,16 +168,22 @@ export default function ProjectsTable(props) {
                     render={(value, record) => {
                         return value ? "Да" : "Нет"
                     }}
-                    filters={[{text: "Да", value: "Да"}, {text: "Нет", value: "Нет"},]}
-                    onFilter={(value, record) => record.isHavePresentation.indexOf(value) === 0}
+                    filters={[{text: "Да", value: true}, {text: "Нет", value: false},]}
+                    onFilter={(value, record) => record.isHavePresentation === value}
                 />
                 <Column
                     width={100}
-                        title="Оценка комиссии"
+                    title="Оценка комиссии"
                     dataIndex="comissionScore"
                     key="comissionScore"
                     render={(value, record) => {
-                        return value || "Нет оценки"
+                        return value === null ? "Нет оценки" : value
+                    }}
+                    filters={[{text: "Есть оценка", value: true}, {text: "Нет оценки", value: false}]}
+                    onFilter={(value, record) => {
+                        return value ?
+                            record.comissionScore !== null :
+                            record.comissionScore === null;
                     }}
                 />
                 <Column
@@ -189,16 +197,16 @@ export default function ProjectsTable(props) {
                     filters={[{text: "Активный", value: "Активный"}, {text: "Завершённый", value: "Завершённый"},]}
                     onFilter={(value, record) => record.status.indexOf(value) === 0}
                 />
-                {/*<Column*/}
-                {/*    width={90}*/}
-                {/*    title="Действие"*/}
-                {/*    key="action"*/}
-                {/*    render={(value, record) => {*/}
-                {/*        return <Space size="middle">*/}
-                {/*            <Link to={record.id}>К проекту</Link>*/}
-                {/*        </Space>*/}
-                {/*    }}*/}
-                {/*/>*/}
+                <Column
+                    width={90}
+                    title="Действие"
+                    key="action"
+                    render={(value, record) => {
+                        return <Space size="middle">
+                            <Link to={record.id}>К проекту</Link>
+                        </Space>
+                    }}
+                />
             </Table>
         </div>
     );

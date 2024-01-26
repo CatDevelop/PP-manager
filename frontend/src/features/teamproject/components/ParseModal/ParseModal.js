@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {App, Button, Input, Modal, Select, Form} from "antd";
+import {App, Button, Input, Modal, Select, Form, Spin} from "antd";
 import {parseProjects} from "../../../../store/slices/teamprojectSlice";
 import {useDispatch} from "react-redux";
 import styles from "./ParseModal.module.css"
@@ -94,10 +94,9 @@ export default function ParseModal(props) {
                     />
                 </Form.Item>
 
-
                 {
                     isLoading ?
-                        <p className={styles.loading}>Не закрывайте страницу! Загружаю данные...</p> :
+                        <p className={styles.loading}><Spin/> Не закрывайте страницу! Загружаю данные...</p> :
                         <div className={styles.buttons}>
                             <Button onClick={() => props.setIsOpen(false)} disabled={isLoading}>
                                 Отмена
