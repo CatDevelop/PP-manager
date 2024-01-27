@@ -1,8 +1,6 @@
 import {Navigate, useNavigate} from "react-router-dom";
 import styles from "./LandingPage.module.css"
 import {useDispatch} from "react-redux";
-import Header from "../../components/Header/Header";
-import {Card, Space} from "antd";
 
 
 export function LandingPage() {

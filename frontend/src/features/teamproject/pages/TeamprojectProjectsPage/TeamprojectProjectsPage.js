@@ -42,6 +42,13 @@ export function TeamprojectProjectsPage() {
         dispatch(removeProject())
     }, []);
 
+    function selectElementContents() {
+        let table = document.getElementsByClassName(['ant-table-tbody'])[0];
+        let text = table.innerText.trim();
+        navigator.clipboard.writeText(text).catch(function () {
+        });
+    }
+
 
     // console.log(teamproject)
     return (
@@ -73,12 +80,22 @@ export function TeamprojectProjectsPage() {
                     />
                 </div>
 
-                <Button
-                    type="primary"
-                    onClick={() => setIsParseModalOpen(true)}
-                >
-                    Обновить информацию
-                </Button>
+                <div className={styles.buttons}>
+                    <Button
+                        type="primary"
+                        onClick={() => setIsParseModalOpen(true)}
+                    >
+                        Обновить информацию
+                    </Button>
+
+                    <Button
+                        type="primary"
+                        onClick={selectElementContents}
+                    >
+                        Скопировать
+                    </Button>
+                </div>
+
 
                 {/*<ExportButton projects={teamproject.projects}/>*/}
             </div>

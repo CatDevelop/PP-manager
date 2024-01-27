@@ -1,17 +1,25 @@
 import {useRoutes} from 'react-router-dom';
-import LandingLayout from "../components/LandingLayout/LandingLayout";
 import {landingRoutes} from "../features/landing/routes";
 import {teamprojectRoutes} from "../features/teamproject/routes";
+import {authRoutes} from "../features/auth/routes";
+import NotAuthGuard from "./guards/notAuthGuard";
+import AuthGuard from "./guards/authGuard";
 
 const routes = [
     {
-        path: '',
-        element: <LandingLayout/>,
+        element: <NotAuthGuard/>,
         children: [
+            ...authRoutes,
             ...landingRoutes,
         ]
     },
-    ...teamprojectRoutes
+    {
+        element: <AuthGuard/>,
+        children: [
+            ...teamprojectRoutes
+        ]
+    }
+
 ];
 
 export const RootRouter = () => useRoutes(routes);

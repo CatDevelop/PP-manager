@@ -1,11 +1,14 @@
 import {useNavigate} from "react-router-dom";
 import {Menu} from "antd";
-import {FundProjectionScreenOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
+import {FundProjectionScreenOutlined, HomeOutlined, LogoutOutlined, UserOutlined} from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
+import {removeAuth} from "../../store/slices/authSlice";
+import {useDispatch} from "react-redux";
 
 export default function SideBar(props) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const getItem = useCallback((label, key, icon, children, type) => {
         return {
@@ -23,6 +26,9 @@ export default function SideBar(props) {
         getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined />),
         // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
+    const bottomMenu = [
+        getItem('Выйти', 'Exit', <LogoutOutlined />),
+    ];
 
     const onClick = (item) => {
         switch (item.key) {
@@ -34,6 +40,9 @@ export default function SideBar(props) {
                 break
             case 'TeamprojectUsers':
                 navigate('/teamproject/users')
+                break
+            case 'Exit':
+                dispatch(removeAuth())
                 break
             default:
                 navigate('/')
@@ -53,6 +62,15 @@ export default function SideBar(props) {
                 selectedKeys={props.selectedKeys ?? []}
                 onClick={onClick}
             />
+            <Menu
+                mode="inline"
+                theme="light"
+                inlineCollapsed={true}
+                className={styles.menu__buttons}
+                items={bottomMenu}
+                onClick={onClick}
+            />
+
         </div>
     )
 }

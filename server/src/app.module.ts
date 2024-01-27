@@ -5,6 +5,8 @@ import {TeamprojectModule} from './teamproject/teamproject.module';
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {ProjectModule} from './project/project.module';
+import {UserModule} from "./user/user.module";
+import {AuthModule} from "./auth/auth.module";
 
 @Module({
     imports: [
@@ -25,6 +27,8 @@ import {ProjectModule} from './project/project.module';
             inject: [ConfigService]
         }),
         ProjectModule,
+        UserModule,
+        AuthModule
     ],
     controllers: [AppController],
     providers: [AppService],
