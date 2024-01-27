@@ -12,10 +12,16 @@ export class AuthService {
     ) {}
 
     async validateUser(login: string, password: string) {
-        const user = await this.userService.findOne(login);
-        if (user && await argon2.verify(user.password, password)) {
-            return user;
+        try {
+            const user = await this.userService.findOne(login);
+
+            if (user && await argon2.verify(user.password, password)) {
+                return user;
+            }
+        } catch {
+            throw new UnauthorizedException("Login or password are incorrect!");
         }
+
         throw new UnauthorizedException("Login or password are incorrect!");
     }
 

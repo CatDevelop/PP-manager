@@ -13,11 +13,6 @@ export class UserService {
         private readonly jwtService: JwtService
     ) {}
 
-
-    async create(createUserDto: CreateUserDto) {
-        return await argon2.hash("Tortik12345");
-    }
-
     async findOne(login: string){
         const user = await this.userRepository.findOne({
             where: {login}
