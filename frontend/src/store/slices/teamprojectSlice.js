@@ -11,18 +11,19 @@ export const parseProjects = createAsyncThunk(
                 throw new Error("Необходимо вставить Bearer-токен!");
 
             let response = await fetch(
-                    API.PARSE_PROJECTS,
+                API.PARSE_PROJECTS,
                 {
                     method: 'post',
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken")
                     },
                     body: JSON.stringify(data)
                 }
             );
 
             if (!response.ok) {
-                if(response.status === 401)
+                if (response.status === 401)
                     throw new Error("Неверный Bearer токен!");
                 throw new Error("Ошибка сервера!");
             }
@@ -46,7 +47,8 @@ export const createReport = createAsyncThunk(
                 {
                     method: 'post',
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken")
                     },
                     body: JSON.stringify(data)
                 }

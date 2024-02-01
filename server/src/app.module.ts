@@ -7,9 +7,13 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {ProjectModule} from './project/project.module';
 import {UserModule} from "./user/user.module";
 import {AuthModule} from "./auth/auth.module";
+import { PartnerModule } from './partner/partner.module';
+import {ScheduleModule} from "@nestjs/schedule";
+import { SheduleManagerModule } from './shedule-manager/shedule-manager.module';
 
 @Module({
     imports: [
+        ScheduleModule.forRoot(),
         TeamprojectModule,
         ConfigModule.forRoot({isGlobal: true}),
         TypeOrmModule.forRootAsync({
@@ -28,7 +32,9 @@ import {AuthModule} from "./auth/auth.module";
         }),
         ProjectModule,
         UserModule,
-        AuthModule
+        AuthModule,
+        PartnerModule,
+        SheduleManagerModule
     ],
     controllers: [AppController],
     providers: [AppService],

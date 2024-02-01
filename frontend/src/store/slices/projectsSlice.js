@@ -9,7 +9,10 @@ export const getAllProjects = createAsyncThunk(
             let response = await fetch(
                 `${API.GET_PROJECTS}/${data.year}/${data.term}`,
                 {
-                    method: 'get'
+                    method: 'get',
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken")
+                    }
                 }
             );
 
