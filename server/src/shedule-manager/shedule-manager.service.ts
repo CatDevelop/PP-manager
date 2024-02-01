@@ -1,6 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {Cron, CronExpression} from "@nestjs/schedule";
-import {TeamprojectService} from "../teamproject/teamproject.service";
+import {Cron} from "@nestjs/schedule";
 import {ConfigService} from "@nestjs/config";
 
 @Injectable()
@@ -8,7 +7,7 @@ export class SheduleManagerService {
     constructor(private readonly configService: ConfigService) {
     }
 
-    @Cron("0 */30 * * * *")
+    @Cron("0 */10 * * * *")
     async handleCron() {
         const postResponse = await fetch('https://compute.api.cloud.yandex.net/compute/v1/instances/fhmhtmqf4rga3slbcm41:start', {
             method: 'POST',
