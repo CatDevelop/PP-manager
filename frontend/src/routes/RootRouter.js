@@ -4,6 +4,8 @@ import {teamprojectRoutes} from "../features/teamproject/routes";
 import {authRoutes} from "../features/auth/routes";
 import NotAuthGuard from "./guards/notAuthGuard";
 import AuthGuard from "./guards/authGuard";
+import {partnersRoutes} from "../features/partners/routes";
+import {analyticRoutes} from "../features/analytics/routes";
 
 const routes = [
     {
@@ -16,7 +18,9 @@ const routes = [
     {
         element: <AuthGuard/>,
         children: [
-            ...teamprojectRoutes
+            ...teamprojectRoutes,
+            ...partnersRoutes,
+            ...analyticRoutes
         ]
     }
 

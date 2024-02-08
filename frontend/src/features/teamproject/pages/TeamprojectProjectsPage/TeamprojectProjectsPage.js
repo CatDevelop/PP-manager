@@ -55,6 +55,7 @@ export function TeamprojectProjectsPage() {
         <div className={styles.page}>
             <SideBar selectedKeys={["TeamprojectProjects"]}/>
 
+            <h1 className={styles.title}>Проекты</h1>
             <div className={styles.header}>
                 <div className={styles.filters}>
                     <Select
@@ -88,12 +89,12 @@ export function TeamprojectProjectsPage() {
                         Обновить информацию
                     </Button>
 
-                    <Button
-                        type="primary"
-                        onClick={selectElementContents}
-                    >
-                        Скопировать
-                    </Button>
+                    {/*<Button*/}
+                    {/*    type="primary"*/}
+                    {/*    onClick={selectElementContents}*/}
+                    {/*>*/}
+                    {/*    Скопировать*/}
+                    {/*</Button>*/}
                 </div>
 
 

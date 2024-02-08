@@ -22,7 +22,7 @@ export class TeamprojectService {
         let myHeaders = new Headers();
         myHeaders.append("Authorization", "Bearer " + parseProjectsDto.token);
 
-        let requestOptions = {
+        let requestOptions: RequestInit = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
@@ -31,7 +31,6 @@ export class TeamprojectService {
         let projects = []
 
         let localProjects = await fetch(
-            // @ts-ignore
             "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + parseProjectsDto.year + "&semester=" + parseProjectsDto.term + "&size=10000&page=1", requestOptions)
             .then(response => response.json())
             .then(result => result)
@@ -43,7 +42,6 @@ export class TeamprojectService {
         let i = 0
         let newProjectsCount = 0;
         let updatedProjectsCount = 0;
-        // @ts-ignore
         for (const project of projects) {
             let details = {}
             let results = {}
@@ -51,25 +49,21 @@ export class TeamprojectService {
             let team = {}
             i += 1;
 
-            // @ts-ignore
             await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/documents/results", requestOptions)
                 .then(response => response.json())
                 .then(result => documents = result)
                 .catch(error => console.log('error', error));
 
-            // @ts-ignore
             await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/details", requestOptions)
                 .then(response => response.json())
                 .then(result => details = result)
                 .catch(error => console.log('error', error));
 
-            // @ts-ignore
             await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/result", requestOptions)
                 .then(response => response.json())
                 .then(result => results = result)
                 .catch(error => console.log('error', error));
 
-            // @ts-ignore
             await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/team", requestOptions)
                 .then(response => response.json())
                 .then(result => team = result)

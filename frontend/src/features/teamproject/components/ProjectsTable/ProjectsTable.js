@@ -20,7 +20,6 @@ export default function ProjectsTable(props) {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
 
-
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm({
             closeDropdown: false,

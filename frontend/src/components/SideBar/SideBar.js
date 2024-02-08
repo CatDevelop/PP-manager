@@ -1,6 +1,12 @@
 import {useNavigate} from "react-router-dom";
 import {Menu} from "antd";
-import {FundProjectionScreenOutlined, HomeOutlined, LogoutOutlined, UserOutlined} from "@ant-design/icons";
+import {
+    AppstoreOutlined,
+    FileProtectOutlined,
+    FundProjectionScreenOutlined,
+    LineChartOutlined,
+    LogoutOutlined
+} from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
 import {removeAuth} from "../../store/slices/authSlice";
@@ -23,11 +29,14 @@ export default function SideBar(props) {
     const topMenu = [
         // getItem('Основная', 'Home', <HomeOutlined/>),
         // {type: 'divider'},
-        getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined />),
+        getItem('Заявки', 'PartnersRequests', <AppstoreOutlined />),
+        getItem('Паспорта', 'PartnersPassports', <FileProtectOutlined/>),
+        getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined/>),
+        getItem('Аналитика', 'Analytic', <LineChartOutlined />),
         // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
     const bottomMenu = [
-        getItem('Выйти', 'Exit', <LogoutOutlined />),
+        getItem('Выйти', 'Exit', <LogoutOutlined/>),
     ];
 
     const onClick = (item) => {
@@ -35,11 +44,20 @@ export default function SideBar(props) {
             case 'Home':
                 navigate('/')
                 break
+            case 'PartnersPassports':
+                navigate('/partners/passports')
+                break
+            case 'PartnersRequests':
+                navigate('/partners/requests')
+                break
             case 'TeamprojectProjects':
                 navigate('/teamproject/projects')
                 break
             case 'TeamprojectUsers':
                 navigate('/teamproject/users')
+                break
+            case 'Analytic':
+                navigate('/analytic')
                 break
             case 'Exit':
                 dispatch(removeAuth())
@@ -70,7 +88,6 @@ export default function SideBar(props) {
                 items={bottomMenu}
                 onClick={onClick}
             />
-
         </div>
     )
 }

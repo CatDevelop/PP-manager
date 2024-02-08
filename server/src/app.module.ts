@@ -10,6 +10,13 @@ import {AuthModule} from "./auth/auth.module";
 import { PartnerModule } from './partner/partner.module';
 import {ScheduleModule} from "@nestjs/schedule";
 import { SheduleManagerModule } from './shedule-manager/shedule-manager.module';
+import { PassportModule } from './passport/passport.module';
+import { PeriodModule } from './period/period.module';
+import { CourseModule } from './course/course.module';
+import { RequestModule } from './request/request.module';
+import { CustomerCompanyModule } from './customer-company/customer-company.module';
+import { CustomerUserModule } from './customer-user/customer-user.module';
+import { AnalyticModule } from './analytic/analytic.module';
 
 @Module({
     imports: [
@@ -26,7 +33,8 @@ import { SheduleManagerModule } from './shedule-manager/shedule-manager.module';
                 password: configService.get("DB_PASSWORD"),
                 database: configService.get("DB_NAME"),
                 synchronize: true,
-                entities: [__dirname + "/**/*.entity{.js, .ts}"]
+                autoLoadEntities: true,
+                entities: [__dirname + "/**/*.entities{.js, .ts}"]
             }),
             inject: [ConfigService]
         }),
@@ -34,7 +42,14 @@ import { SheduleManagerModule } from './shedule-manager/shedule-manager.module';
         UserModule,
         AuthModule,
         PartnerModule,
-        SheduleManagerModule
+        SheduleManagerModule,
+        PassportModule,
+        PeriodModule,
+        CourseModule,
+        RequestModule,
+        CustomerCompanyModule,
+        CustomerUserModule,
+        AnalyticModule
     ],
     controllers: [AppController],
     providers: [AppService],
