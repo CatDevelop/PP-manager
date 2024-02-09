@@ -23,4 +23,10 @@ export class PartnerController {
     parseRequest(@Body() parseRequestsDto: ParsePassportsDto) {
         return this.partnerService.parseRequests(parseRequestsDto);
     }
+
+    @Get("token")
+    @UseGuards(JwtAuthGuard)
+    getTokens() {
+        return this.partnerService.getTokens();
+    }
 }

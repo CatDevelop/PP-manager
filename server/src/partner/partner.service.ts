@@ -13,6 +13,9 @@ import {CustomerUserService} from "../customer-user/customer-user.service";
 import {CustomerUserMappers} from "../customer-user/mappers/customer-user.mappers";
 import {ParseRequestsDto} from "./dto/parse-requests.dto";
 import {GetRequestsPagesCountDto} from "./dto/get-requests-pages-count.dto";
+import {Builder, By, until} from "selenium-webdriver";
+import {ConfigService} from "@nestjs/config";
+
 
 @Injectable()
 export class PartnerService {
@@ -21,7 +24,35 @@ export class PartnerService {
         private readonly requestService: RequestService,
         private readonly customerCompanyService: CustomerCompanyService,
         private readonly customerUserService: CustomerUserService,
+        private readonly configService: ConfigService,
     ) {
+    }
+
+    async getTokens() {
+        const driver = new Builder().forBrowser('chrome').build();
+        try {
+            await driver.get("https://partner.urfu.ru");
+            console.log('Website opened successfully!');
+            const loginButton = driver.wait(
+                until.elementLocated(By.className('login-btn')),
+                5000
+            );
+            await loginButton.click();
+            await driver.findElement(By.id('username')).sendKeys(this.configService.get("LOGIN"));
+            await driver.findElement(By.id('password')).sendKeys(this.configService.get("PASSWORD"));
+            await driver.findElement(By.id('kc-login')).click();
+            await driver.sleep(5000);
+            const key = await driver.manage().getCookie('key');
+            const session = await driver.manage().getCookie('session-cookie');
+            return {
+                key: key.value,
+                session: session.value
+            }
+        } catch (error) {
+            console.error('Failed to open website:', error);
+        } finally {
+            await driver.quit();
+        }
     }
 
     async parseRequests(parseRequestsDto: ParseRequestsDto) {
