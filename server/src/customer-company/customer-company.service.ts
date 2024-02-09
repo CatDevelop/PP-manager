@@ -84,7 +84,9 @@ export class CustomerCompanyService {
             // },
             relations: {
                 customer_users: {
-                    requests: true,
+                    requests: {
+                        passports: true
+                    },
                 },
             },
         })

@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {Menu} from "antd";
 import {
-    AppstoreOutlined,
+    AppstoreOutlined, BankOutlined,
     FileProtectOutlined,
     FundProjectionScreenOutlined,
     LineChartOutlined,
@@ -32,6 +32,7 @@ export default function SideBar(props) {
         getItem('Заявки', 'PartnersRequests', <AppstoreOutlined />),
         getItem('Паспорта', 'PartnersPassports', <FileProtectOutlined/>),
         getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined/>),
+        getItem('Заказчики', 'PartnersCustomerCompanies', <BankOutlined />),
         getItem('Аналитика', 'Analytic', <LineChartOutlined />),
         // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
@@ -49,6 +50,9 @@ export default function SideBar(props) {
                 break
             case 'PartnersRequests':
                 navigate('/partners/requests')
+                break
+            case 'PartnersCustomerCompanies':
+                navigate('/partners/customer-companies')
                 break
             case 'TeamprojectProjects':
                 navigate('/teamproject/projects')

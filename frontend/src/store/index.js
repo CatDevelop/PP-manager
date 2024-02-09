@@ -6,6 +6,7 @@ import authReducer from "./slices/authSlice";
 import passportsReducer from "./slices/passportsSlice";
 import requestsReducer from "./slices/requestsSlice";
 import analyticReducer from "./slices/analyticSlice";
+import customerCompaniesReducer from "./slices/customerCompaniesSlice";
 
 export const store = configureStore({
     reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
         passports: passportsReducer,
         project: projectReducer,
         auth: authReducer,
-        analytic: analyticReducer
+        analytic: analyticReducer,
+        customerCompanies: customerCompaniesReducer
     },
 });
