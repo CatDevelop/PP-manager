@@ -7,6 +7,7 @@ import passportsReducer from "./slices/passportsSlice";
 import requestsReducer from "./slices/requestsSlice";
 import analyticReducer from "./slices/analyticSlice";
 import customerCompaniesReducer from "./slices/customerCompaniesSlice";
+import customerUsersReducer from "./slices/customerUsersSlice";
 
 export const store = configureStore({
     reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
         project: projectReducer,
         auth: authReducer,
         analytic: analyticReducer,
-        customerCompanies: customerCompaniesReducer
+        customerCompanies: customerCompaniesReducer,
+        customerUsers: customerUsersReducer
     },
 });

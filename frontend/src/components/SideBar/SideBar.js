@@ -5,7 +5,7 @@ import {
     FileProtectOutlined,
     FundProjectionScreenOutlined,
     LineChartOutlined,
-    LogoutOutlined
+    LogoutOutlined, RobotOutlined
 } from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
@@ -33,6 +33,8 @@ export default function SideBar(props) {
         getItem('Паспорта', 'PartnersPassports', <FileProtectOutlined/>),
         getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined/>),
         getItem('Заказчики', 'PartnersCustomerCompanies', <BankOutlined />),
+        getItem('Представители', 'PartnersCustomerUsers', <RobotOutlined />),
+        // getItem('Аналитика', 'Analytic', "Аналитика"),
         getItem('Аналитика', 'Analytic', <LineChartOutlined />),
         // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
@@ -53,6 +55,9 @@ export default function SideBar(props) {
                 break
             case 'PartnersCustomerCompanies':
                 navigate('/partners/customer-companies')
+                break
+            case 'PartnersCustomerUsers':
+                navigate('/partners/customer-users')
                 break
             case 'TeamprojectProjects':
                 navigate('/teamproject/projects')
@@ -78,7 +83,7 @@ export default function SideBar(props) {
                 defaultSelectedKeys={['1']}
                 mode="inline"
                 theme="light"
-                inlineCollapsed={true}
+                // inlineCollapsed={true}
                 className={styles.menu__buttons}
                 items={topMenu}
                 selectedKeys={props.selectedKeys ?? []}
@@ -87,7 +92,7 @@ export default function SideBar(props) {
             <Menu
                 mode="inline"
                 theme="light"
-                inlineCollapsed={true}
+                // inlineCollapsed={true}
                 className={styles.menu__buttons}
                 items={bottomMenu}
                 onClick={onClick}
