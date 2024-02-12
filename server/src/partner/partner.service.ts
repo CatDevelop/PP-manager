@@ -15,6 +15,7 @@ import {ParseRequestsDto} from "./dto/parse-requests.dto";
 import {GetRequestsPagesCountDto} from "./dto/get-requests-pages-count.dto";
 import {Builder, By, until} from "selenium-webdriver";
 import {ConfigService} from "@nestjs/config";
+import {Options} from "selenium-webdriver/chrome";
 const XLSX = require('xlsx');
 const JS_XLSX = require('js-xlsx');
 const { htmlToText } = require('html-to-text');
@@ -32,7 +33,9 @@ export class PartnerService {
     }
 
     async getTokens() {
-        const driver = new Builder().forBrowser('chrome').build();
+        const options = new Options()
+        options.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage")
+        const driver = new Builder().forBrowser('chrome').setChromeOptions(options).build();
         try {
             await driver.get("https://partner.urfu.ru");
             console.log('Website opened successfully!');
