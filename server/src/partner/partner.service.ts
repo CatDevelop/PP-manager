@@ -15,6 +15,9 @@ import {ParseRequestsDto} from "./dto/parse-requests.dto";
 import {GetRequestsPagesCountDto} from "./dto/get-requests-pages-count.dto";
 import {Builder, By, until} from "selenium-webdriver";
 import {ConfigService} from "@nestjs/config";
+const XLSX = require('xlsx');
+const JS_XLSX = require('js-xlsx');
+const { htmlToText } = require('html-to-text');
 
 
 @Injectable()
@@ -45,8 +48,8 @@ export class PartnerService {
             const key = await driver.manage().getCookie('key');
             const session = await driver.manage().getCookie('session-cookie');
             return {
-                key: key.value,
-                session: session.value
+                token: key.value,
+                session_cookie: session.value
             }
         } catch (error) {
             console.error('Failed to open website:', error);
@@ -318,5 +321,60 @@ export class PartnerService {
             });
 
         return fullRequest;
+    }
+
+
+    async createRequestReport() {
+        let requests = await this.requestService.findAll({
+            period_id: 8
+        })
+
+        let workbook = XLSX.utils.book_new();
+
+        let requestsSheet = {
+            '!ref': 'A1:G' + (requests.length + 1), // Sheet Range (Which cells will be included in the output)
+            'A1': {
+                t: 's',
+                v: 'Паспорт',
+            },
+            'B1': {
+                t: 's',
+                v: 'Название',
+            },
+            'C1': {
+                t: 's',
+                v: 'Описание',
+            },
+            'D1': {
+                t: 's',
+                v: 'Цель',
+            },
+            'E1': {
+                t: 's',
+                v: 'Критерии',
+            },
+            'F1': {
+                t: 's',
+                v: 'Статус',
+            },
+            'G1': {
+                t: 's',
+                v: 'Ссылка',
+            }
+        };
+
+        requests.forEach((request, index) => {
+            requestsSheet["A" + (index + 2)] = {t: 's', v: request.uid, }
+            requestsSheet["B" + (index + 2)] = {t: 's', v: request.name}
+            requestsSheet["C" + (index + 2)] = {t: 's', v: htmlToText(request.description)}
+            requestsSheet["D" + (index + 2)] = {t: 's', v: htmlToText(request.goal)}
+            requestsSheet["E" + (index + 2)] = {t: 's', v: htmlToText(request.criteria)}
+            requestsSheet["F" + (index + 2)] = {t: 's', v: htmlToText(request.status)}
+            requestsSheet["G" + (index + 2)] = {t: 's', v: "https://partner.urfu.ru/ptraining/services/learning/#/requests/"+request.id}
+        })
+
+        XLSX.utils.book_append_sheet(workbook, requestsSheet, 'Заявки');
+        JS_XLSX.writeFile(workbook, 'Заявки.xlsx');
+        console.log("End of create report")
     }
 }

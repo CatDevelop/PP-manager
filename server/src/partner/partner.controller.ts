@@ -4,6 +4,7 @@ import {CreatePartnerDto} from './dto/create-partner.dto';
 import {UpdatePartnerDto} from './dto/update-partner.dto';
 import {ParsePassportsDto} from "./dto/parse-passports.dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {ParseTeamprojectDto} from "../teamproject/dto/parse-teamproject.dto";
 
 @Controller('partner')
 export class PartnerController {
@@ -22,6 +23,13 @@ export class PartnerController {
     @UseGuards(JwtAuthGuard)
     parseRequest(@Body() parseRequestsDto: ParsePassportsDto) {
         return this.partnerService.parseRequests(parseRequestsDto);
+    }
+
+    @Post("request/report")
+    @UsePipes(new ValidationPipe())
+    @UseGuards(JwtAuthGuard)
+    createReport() {
+        return this.partnerService.createRequestReport();
     }
 
     @Get("token")
