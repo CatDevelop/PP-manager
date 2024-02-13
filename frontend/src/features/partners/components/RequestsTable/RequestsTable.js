@@ -85,7 +85,7 @@ export default function RequestsTable(props) {
                 size="small"
                 scroll={{
                     y: "100%",
-                    x: 90
+                    x: "max-content"
                 }}
                 pagination={{
                     pageSize: 30,
@@ -97,7 +97,7 @@ export default function RequestsTable(props) {
                         if (column.key === "uid")
                             return <Column
                                 title="Номер заявки"
-                                width={90}
+                                width={80}
                                 dataIndex="uid"
                                 key="uid"
                                 render={(value, record) => {
@@ -114,7 +114,7 @@ export default function RequestsTable(props) {
                         if (column.key === "date")
                             return <Column
                                 title="Дата"
-                                width={80}
+                                width={50}
                                 dataIndex="date"
                                 key="date"
                                 render={(value, record) => {
@@ -132,7 +132,7 @@ export default function RequestsTable(props) {
                                 width={200}
                                 dataIndex="name"
                                 key="name"
-                                sorter={(a, b) => a.short_name.localeCompare(b.short_name)}
+                                sorter={(a, b) => a.name.localeCompare(b.name)}
                                 {...getColumnSearchProps("name")}
                             />
 
@@ -149,7 +149,7 @@ export default function RequestsTable(props) {
                         if (column.key === "customer_company_name")
                             return <Column
                                 title="Заказчик"
-                                width={90}
+                                width={150}
                                 dataIndex="customer_company_name"
                                 key="customer_company_name"
                                 {...getColumnSearchProps("customer_company_name")}

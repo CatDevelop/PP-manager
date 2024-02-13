@@ -9,6 +9,8 @@ import {getAllPassports} from "../../../../store/slices/passportsSlice";
 import {usePassports} from "../../../../hooks/use-passports";
 import PassportsTable from "../../components/PassportsTable/PassportsTable";
 import PassportsTableSettings from "../../components/PassportsTableSettings/PassportsTableSettings";
+import PassportSettings from "../../components/PassportSettings/PassportSettings";
+import {removePassport} from "../../../../store/slices/passportSlice";
 
 export const initialPassportsTableColumns = [
     {
@@ -30,6 +32,10 @@ export const initialPassportsTableColumns = [
     {
         key: 'short_name',
         name: 'Название',
+    },
+    {
+        key: 'tags',
+        name: 'Теги',
     },
     {
         key: 'kind',
@@ -64,6 +70,8 @@ export function PartnersPassportsPage() {
 
     const [isParseModalOpen, setIsParseModalOpen] = useState(false);
     const [isSettingsTableOpen, setIsSettingsTableOpen] = useState(false);
+    const [isPassportEditOpen, setIsPassportEditOpen] = useState(false);
+    const [editPassportId, setEditPassportId] = useState(null);
     const [passportsTable, setPassportsTable] = useState([])
     const [passportsTableColumns, setPassportsTableColumns] = useState(
         JSON.parse(localStorage.getItem("PP-manager-passport-columns")) ||
@@ -84,8 +92,11 @@ export function PartnersPassportsPage() {
     const passports = usePassports()
 
     useEffect(() => {
-        dispatch(getAllPassports({period_id: 8}))
-    }, [year, term]);
+        if(!isPassportEditOpen) {
+            dispatch(getAllPassports({period_id: 8}))
+            dispatch(removePassport())
+        }
+    }, [year, term, isPassportEditOpen]);
 
     useEffect(() => {
         dispatch(removeProject())
@@ -95,7 +106,8 @@ export function PartnersPassportsPage() {
         setPassportsTable(passports.passports.map(passport => ({
             id: passport.id,
             uid: passport.uid,
-            short_name: passport.short_name,
+            short_name: passport.short_name || passport.request.name,
+            is_name_from_request: !!!passport.short_name,
             diploma_name: passport.diploma_name,
             date: new Date(Date.parse(passport.date)),
             date_string: new Date(Date.parse(passport.date)).toLocaleDateString(),
@@ -111,11 +123,12 @@ export function PartnersPassportsPage() {
             course: passport.course,
             period: passport.request.period_id,
             customer_id: passport.request.customer_user.id,
-            customer_name: passport.request.customer_user.first_name + " " + passport.request.customer_user.last_name + " " + passport.request.customer_user.middle_name,
+            customer_name: (passport.request.customer_user.last_name || "") + " " + (passport.request.customer_user.first_name || "") + " " + (passport.request.customer_user.middle_name || ""),
             customer_first_name: passport.request.customer_user.first_name,
             customer_last_name: passport.request.customer_user.last_name,
             customer_middle_name: passport.request.customer_user.middle_name,
-            customer_company_name: passport.request.customer_user.customer_company.name
+            customer_company_name: passport.request.customer_user.customer_company.name,
+            tags: passport.tags
         })))
     }, [passports])
 
@@ -170,7 +183,12 @@ export function PartnersPassportsPage() {
             {
                 passports.isLoading ?
                     <Spin/> :
-                    <PassportsTable passports={passportsTable} columns={passportsTableColumns}/>
+                    <PassportsTable
+                        passports={passportsTable}
+                        columns={passportsTableColumns}
+                        setIsPassportEditOpen={setIsPassportEditOpen}
+                        setEditPassportId={setEditPassportId}
+                    />
             }
 
             <PassportsTableSettings
@@ -180,6 +198,17 @@ export function PartnersPassportsPage() {
                 tableColumns={passportsTableColumns}
                 setTableColumns={setPassportsTableColumns}
             />
+
+            {
+                editPassportId &&
+                <PassportSettings
+                    period_id={8}
+                    isOpen={isPassportEditOpen}
+                    setIsOpen={setIsPassportEditOpen}
+                    editPassportId={editPassportId}
+                    setEditPassportId={setEditPassportId}
+                />
+            }
         </div>
     )
 }

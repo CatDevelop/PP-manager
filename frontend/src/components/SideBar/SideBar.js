@@ -5,12 +5,13 @@ import {
     FileProtectOutlined,
     FundProjectionScreenOutlined,
     LineChartOutlined,
-    LogoutOutlined, RobotOutlined
+    LogoutOutlined, RobotOutlined, SettingOutlined
 } from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
 import {removeAuth} from "../../store/slices/authSlice";
 import {useDispatch} from "react-redux";
+
 
 export default function SideBar(props) {
     const navigate = useNavigate();
@@ -39,6 +40,7 @@ export default function SideBar(props) {
         // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
     const bottomMenu = [
+        // getItem('Настройки', 'Settings', <SettingOutlined/>),
         getItem('Выйти', 'Exit', <LogoutOutlined/>),
     ];
 
@@ -67,6 +69,9 @@ export default function SideBar(props) {
                 break
             case 'Analytic':
                 navigate('/analytic')
+                break
+            case 'Settings':
+                navigate('/settings')
                 break
             case 'Exit':
                 dispatch(removeAuth())

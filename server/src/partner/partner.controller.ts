@@ -1,10 +1,7 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe} from '@nestjs/common';
 import {PartnerService} from './partner.service';
-import {CreatePartnerDto} from './dto/create-partner.dto';
-import {UpdatePartnerDto} from './dto/update-partner.dto';
 import {ParsePassportsDto} from "./dto/parse-passports.dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
-import {ParseTeamprojectDto} from "../teamproject/dto/parse-teamproject.dto";
 
 @Controller('partner')
 export class PartnerController {

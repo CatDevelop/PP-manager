@@ -1,9 +1,11 @@
-import React, {useRef, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {App, Button, Input, Space, Table, Tag} from "antd";
+import React, {useEffect, useRef, useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {App, Button, Dropdown, Input, Menu, Space, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./PassportsTable.module.css"
 import {SearchOutlined} from "@ant-design/icons";
+import {getAllTags} from "../../../../store/slices/tagsSlice";
+import {useTags} from "../../../../hooks/use-tags";
 
 const {Column, ColumnGroup} = Table;
 const {TextArea} = Input;
@@ -17,6 +19,11 @@ export default function PassportsTable(props) {
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
 
+    const tags = useTags()
+
+    useEffect(() => {
+        dispatch(getAllTags())
+    }, []);
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm({
@@ -76,6 +83,45 @@ export default function PassportsTable(props) {
         }
     });
 
+    const getUidPassportDropdown = (value, record) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank" href={"https://partner.urfu.ru/ptraining/services/learning/#/passport/" + record.id}>
+                    Перейти к паспорту в ЛКП
+                </a>
+            ),
+        },
+        // {
+        //     key: '1',
+        //     label: (
+        //         <Link to={"/partners/passport/" + record.id}>
+        //             Перейти в PP-manager
+        //         </Link>
+        //     ),
+        // },
+    ]
+
+    const getRequestUidPassportDropdown = (value, record) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank"
+                   href={"https://partner.urfu.ru/ptraining/services/learning/#/requests/" + record.request_id}>
+                    Перейти к заявке в ЛКП
+                </a>
+            ),
+        },
+        // {
+        //     key: '1',
+        //     label: (
+        //         <Link to={"/partners/request/" + record.id}>
+        //             Перейти в PP-manager
+        //         </Link>
+        //     ),
+        // },
+    ]
+
     return (
         <div className={styles.tableContainer}>
             <Table
@@ -85,7 +131,7 @@ export default function PassportsTable(props) {
                 size="small"
                 scroll={{
                     y: "100%",
-                    x: 90
+                    x: "max-content"
                 }}
                 pagination={{
                     pageSize: 30,
@@ -95,26 +141,34 @@ export default function PassportsTable(props) {
                 {
                     props.columns.map(column => {
                         if (column.key === "uid")
-                            return <Column
-                                title="Номер паспорта"
-                                width={90}
-                                dataIndex="uid"
-                                key="uid"
-                                render={(value, record) => {
-                                    return <a
-                                        target="_blank"
-                                        href={"https://partner.urfu.ru/ptraining/services/learning/#/passport/" + record.id}
-                                    >
-                                        {value}
-                                    </a>
-                                }}
-                                {...getColumnSearchProps("uid")}
-                            />
+                            return (
+                                <Column
+                                    title="Номер паспорта"
+                                    width={100}
+                                    dataIndex="uid"
+                                    key="uid"
+                                    render={(value, record) => {
+                                        return (
+                                            <Dropdown
+                                                trigger={['click']}
+                                                menu={{
+                                                    items: getUidPassportDropdown(value, record),
+                                                }}
+                                            >
+                                                <a onClick={(e) => e.preventDefault()}>
+                                                    {value}
+                                                </a>
+                                            </Dropdown>
+                                        )
+                                    }}
+                                    {...getColumnSearchProps("uid")}
+                                />
+                            )
 
                         if (column.key === "date")
                             return <Column
                                 title="Дата паспорта"
-                                width={80}
+                                width={120}
                                 dataIndex="date"
                                 key="date"
                                 render={(value, record) => {
@@ -129,16 +183,22 @@ export default function PassportsTable(props) {
                         if (column.key === "request_uid")
                             return <Column
                                 title="Номер заявки"
-                                width={90}
+                                width={100}
                                 dataIndex="request_uid"
                                 key="request_гid"
                                 render={(value, record) => {
-                                    return <a
-                                        target="_blank"
-                                        href={"https://partner.urfu.ru/ptraining/services/learning/#/requests/" + record.request_id}
-                                    >
-                                        {value}
-                                    </a>
+                                    return (
+                                        <Dropdown
+                                            trigger={['click']}
+                                            menu={{
+                                                items: getRequestUidPassportDropdown(value, record),
+                                            }}
+                                        >
+                                            <a onClick={(e) => e.preventDefault()}>
+                                                {value}
+                                            </a>
+                                        </Dropdown>
+                                    )
                                 }}
                                 {...getColumnSearchProps("request_гid")}
                             />
@@ -146,7 +206,7 @@ export default function PassportsTable(props) {
                         if (column.key === "request_date")
                             return <Column
                                 title="Дата заявки"
-                                width={80}
+                                width={120}
                                 dataIndex="request_date"
                                 key="request_date"
                                 render={(value, record) => {
@@ -161,12 +221,42 @@ export default function PassportsTable(props) {
                         if (column.key === "short_name")
                             return <Column
                                 title="Название"
-                                width={200}
+                                width={250}
                                 dataIndex="short_name"
                                 key="short_name"
+                                render={(value, record) => {
+                                    return <p>
+                                        {
+                                            record.is_name_from_request &&
+                                            <p className={styles.requestName__warning}>Из заявки</p>
+                                        }
+                                        {value}
+                                    </p>
+                                }}
                                 sorter={(a, b) => a.short_name.localeCompare(b.short_name)}
                                 {...getColumnSearchProps("short_name")}
                             />
+
+                        if (column.key === "tags")
+                            return (
+                                <Column
+                                    title="Теги"
+                                    width={100}
+                                    dataIndex="tags"
+                                    key="tags"
+                                    render={(value, record) => {
+                                        return (
+                                            <div>
+                                                {value.map(tag => {
+                                                    return <Tag color={tag.color}>{tag.text}</Tag>
+                                                })}
+                                            </div>
+                                        )
+                                    }}
+                                    filters={!tags.isLoading ? tags.tags.map(tag => ({text: tag.text, value: tag.id})) : []}
+                                    onFilter={(value, record) => record.tags.find(t => t.id === value) }
+                                />
+                            )
 
                         if (column.key === "kind")
                             return <Column
@@ -221,7 +311,7 @@ export default function PassportsTable(props) {
                         if (column.key === "customer_company_name")
                             return <Column
                                 title="Заказчик"
-                                width={90}
+                                width={200}
                                 dataIndex="customer_company_name"
                                 key="customer_company_name"
                                 {...getColumnSearchProps("customer_company_name")}
@@ -230,7 +320,7 @@ export default function PassportsTable(props) {
                         if (column.key === "customer_name")
                             return <Column
                                 title="Представитель заказчика"
-                                width={90}
+                                width={140}
                                 dataIndex="customer_name"
                                 key="customer_name"
                                 {...getColumnSearchProps("customer_name")}
@@ -239,13 +329,30 @@ export default function PassportsTable(props) {
                         if (column.key === "available_seats_number")
                             return <Column
                                 title="Количество мест"
-                                width={90}
+                                width={110}
                                 dataIndex="available_seats_number"
                                 key="available_seats_number"
                                 sorter={(a, b) => a.available_seats_number - b.available_seats_number}
                             />
                     })
                 }
+                <Column
+                    width={90}
+                    title="Действие"
+                    key="action"
+                    render={(value, record) => {
+                        return <Space size="middle">
+                            <a
+                                onClick={() => {
+                                    props.setIsPassportEditOpen(true);
+                                    props.setEditPassportId(record.id)
+                                }}
+                            >
+                                Редактировать
+                            </a>
+                        </Space>
+                    }}
+                />
             </Table>
         </div>
     );

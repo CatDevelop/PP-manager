@@ -86,7 +86,7 @@ export function PartnersRequestsPage() {
             status: request.status,
             period: request.period_id,
             customer_id: request.customer_user.id,
-            customer_name: request.customer_user.first_name + " " + request.customer_user.last_name + " " + request.customer_user.middle_name,
+            customer_name: (request.customer_user.first_name || "") + " " + (request.customer_user.last_name || "") + " " + (request.customer_user.middle_name || ""),
             customer_first_name: request.customer_user.first_name,
             customer_last_name: request.customer_user.last_name,
             customer_middle_name: request.customer_user.middle_name,

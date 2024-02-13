@@ -85,7 +85,7 @@ export default function CustomerUsersTable(props) {
                 size="small"
                 scroll={{
                     y: "100%",
-                    x: 90
+                    x: "calc(100vw - 170px - 80px)"
                 }}
                 pagination={{
                     pageSize: 30,
@@ -97,7 +97,7 @@ export default function CustomerUsersTable(props) {
                         if (column.key === "name")
                             return <Column
                                 title="ФИО"
-                                width={200}
+                                width={130}
                                 dataIndex="name"
                                 key="name"
                                 {...getColumnSearchProps("name")}
@@ -106,7 +106,7 @@ export default function CustomerUsersTable(props) {
                         if (column.key === "email")
                             return <Column
                                 title="Почта"
-                                width={200}
+                                width={90}
                                 dataIndex="email"
                                 key="email"
                                 {...getColumnSearchProps("email")}
@@ -143,7 +143,7 @@ export default function CustomerUsersTable(props) {
                         if (column.key === "customer_company_name")
                             return <Column
                                 title="Организация"
-                                width={200}
+                                width={150}
                                 dataIndex="customer_company_name"
                                 key="customer_company_name"
                                 {...getColumnSearchProps("customer_company_name")}

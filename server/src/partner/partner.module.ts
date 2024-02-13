@@ -10,11 +10,14 @@ import {CustomerCompanyService} from "../customer-company/customer-company.servi
 import {CustomerCompany} from "../customer-company/entities/customer-company.entity";
 import {CustomerUser} from "../customer-user/entities/customer-user.entity";
 import {CustomerUserService} from "../customer-user/customer-user.service";
+import {Course} from "../course/entities/course.entity";
+import {CourseService} from "../course/course.service";
+import {Tag} from "../tag/entities/tag.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser])],
+    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag])],
     controllers: [PartnerController],
-    providers: [PartnerService, PassportService, RequestService, CustomerCompanyService, CustomerUserService],
+    providers: [PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService],
 })
 export class PartnerModule {
 }

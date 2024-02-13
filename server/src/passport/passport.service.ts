@@ -3,16 +3,21 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {CreatePassportDto} from "./dto/create-passport.dto";
 import {Passport} from "./entities/passport.entity";
-import {UpdateRequestDto} from "../request/dto/update-request.dto";
 import {UpdatePassportDto} from "./dto/update-passport.dto";
-import {FindAllProjectsDto} from "../project/dto/find-all-projects.dto";
 import {FindAllPassportsDto} from "./dto/find-all-passports.dto";
+import {Course} from "../course/entities/course.entity";
+import {Tag} from "../tag/entities/tag.entity";
+import {FindOnePassportDto} from "./dto/find-one-passport.dto";
 
 @Injectable()
 export class PassportService {
     constructor(
         @InjectRepository(Passport)
         private readonly passportRepository: Repository<Passport>,
+        @InjectRepository(Course)
+        private readonly courseRepository: Repository<Course>,
+        @InjectRepository(Tag)
+        private readonly tagRepository: Repository<Tag>,
     ) {
     }
 
@@ -22,9 +27,7 @@ export class PassportService {
     }
 
     async create(createPassportDto: CreatePassportDto) {
-        const isPassportExist = await this.passportRepository.existsBy({id: createPassportDto.id})
-
-        if (isPassportExist)
+        if (!await this.isCreate(createPassportDto.id))
             throw new BadRequestException("The passport already exist!");
 
         const newPassport = {
@@ -51,19 +54,46 @@ export class PassportService {
         if (!passport)
             throw new NotFoundException("Passport not found!")
 
-        await this.passportRepository.update(passport.id, {
-            id: updatePassportDto.id,
-            uid: updatePassportDto.uid,
-            short_name: updatePassportDto.short_name,
-            diploma_name: updatePassportDto.diploma_name,
-            date: updatePassportDto.date,
-            team_count: updatePassportDto.team_count,
-            students_count: updatePassportDto.students_count,
-            request: {id: updatePassportDto.request_id},
-            kind: updatePassportDto.kind,
-            status: updatePassportDto.status
-            // course: updatePassportDto.course.map(course => ({id: course}))
-        });
+        if ("course" in updatePassportDto) {
+            const courseExists = await this.courseRepository.countBy(
+                updatePassportDto.course.map(course => ({id: course}))
+            )
+
+            if (updatePassportDto.course.length !== 0 && courseExists !== updatePassportDto.course.length)
+                throw new BadRequestException("The course does not exist!");
+
+            await this.passportRepository.save({
+                ...passport,
+                course: updatePassportDto.course.map(course => ({id: course}))
+            })
+            delete updatePassportDto["course"];
+        }
+
+        if ("tags" in updatePassportDto) {
+            const tagsExists = await this.tagRepository.countBy(
+                updatePassportDto.tags.map(tag => ({id: tag}))
+            )
+
+            if (updatePassportDto.tags.length !== 0 && tagsExists !== updatePassportDto.tags.length)
+                throw new BadRequestException("The tag does not exist!");
+
+            await this.passportRepository.save({
+                ...passport,
+                tags: updatePassportDto.tags.map(tag => ({id: tag}))
+            })
+            delete updatePassportDto["tags"];
+        }
+
+        if ("request_id" in updatePassportDto) {
+            await this.passportRepository.update(passport.id, {
+                request: {id: updatePassportDto.request_id},
+            });
+            delete updatePassportDto["request_id"];
+        }
+
+        if (Object.keys(updatePassportDto).length > 0)
+            // @ts-ignore
+            await this.passportRepository.update(passport.id, updatePassportDto);
 
         return this.passportRepository.findOne({
             where: {id},
@@ -95,10 +125,32 @@ export class PassportService {
                     }
                 },
                 course: true,
+                tags: true
             },
         })
 
         return passports
+    }
+
+    async findOne(findOnePassportDto: FindOnePassportDto) {
+        if (!await this.isCreate(findOnePassportDto.id))
+            throw new NotFoundException("Passport not found!")
+
+        const passport = await this.passportRepository.findOne({
+            where: {id: findOnePassportDto.id},
+            relations: {
+                request: {
+                    period_id: true,
+                    customer_user: {
+                        customer_company: true
+                    }
+                },
+                course: true,
+                tags: true
+            },
+        })
+
+        return passport
     }
 
 }

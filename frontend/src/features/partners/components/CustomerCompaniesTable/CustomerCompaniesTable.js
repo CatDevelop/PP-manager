@@ -85,7 +85,7 @@ export default function CustomerCompaniesTable(props) {
                 size="small"
                 scroll={{
                     y: "100%",
-                    x: 90
+                    x: "max-content"
                 }}
                 pagination={{
                     pageSize: 30,
@@ -130,11 +130,10 @@ export default function CustomerCompaniesTable(props) {
                                 {...getColumnSearchProps("ogrn")}
                             />
 
-
                         if (column.key === "phone")
                             return <Column
                                 title="Телефон"
-                                width={90}
+                                width={80}
                                 dataIndex="phone"
                                 key="phone"
                                 {...getColumnSearchProps("phone")}
@@ -143,7 +142,7 @@ export default function CustomerCompaniesTable(props) {
                         if (column.key === "customer_users_count")
                             return <Column
                                 title="Количество представителей"
-                                width={80}
+                                width={90}
                                 dataIndex="customer_users_count"
                                 key="customer_users_count"
                             />
@@ -151,9 +150,10 @@ export default function CustomerCompaniesTable(props) {
                         if (column.key === "requests_count")
                             return <Column
                                 title="Количество заявок"
-                                width={60}
+                                width={90}
                                 dataIndex="requests_count"
                                 key="requests_count"
+                                sorter={(a, b) => a.requests_count - b.requests_count}
                             />
                     })
                 }

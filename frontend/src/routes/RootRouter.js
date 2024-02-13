@@ -6,6 +6,7 @@ import NotAuthGuard from "./guards/notAuthGuard";
 import AuthGuard from "./guards/authGuard";
 import {partnersRoutes} from "../features/partners/routes";
 import {analyticRoutes} from "../features/analytics/routes";
+import {settingsRoutes} from "../features/settings/routes";
 
 const routes = [
     {
@@ -20,7 +21,8 @@ const routes = [
         children: [
             ...teamprojectRoutes,
             ...partnersRoutes,
-            ...analyticRoutes
+            ...analyticRoutes,
+            ...settingsRoutes
         ]
     }
 

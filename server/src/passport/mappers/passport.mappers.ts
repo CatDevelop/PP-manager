@@ -18,7 +18,7 @@ export namespace PassportMappers {
             course: passport.mainProgram.course,
             request_id: passport.source.id,
             kind: passport.kind,
-            status: passport.statuses[0].text
+            status: passport.statuses[0].text,
         };
     }
 

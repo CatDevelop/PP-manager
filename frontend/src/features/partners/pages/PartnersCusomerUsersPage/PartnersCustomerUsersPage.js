@@ -74,7 +74,7 @@ export function PartnersCustomerUsersPage() {
     useEffect(() => {
         setCustomerUsersTable(customerUsers.customerUsers.map(customerUser => ({
             id: customerUser.id,
-            name: customerUser.last_name + " " + customerUser.first_name + " " + customerUser.middle_name,
+            name: (customerUser.last_name || "") + " " + (customerUser.first_name || "") + " " + (customerUser.middle_name || ""),
             email: customerUser.email,
             phone: customerUser.phone,
             qualification: customerUser.qualification,

@@ -2,6 +2,7 @@ import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, 
 import {Period} from "../../period/entities/period.entity";
 import {Course} from "../../course/entities/course.entity";
 import {Request} from "../../request/entities/request.entity";
+import {Tag} from "../../tag/entities/tag.entity";
 
 @Entity()
 export class Passport {
@@ -47,4 +48,18 @@ export class Passport {
         },
     })
     course: Course[]
+
+    @ManyToMany(() => Tag, (tag) => tag.passports, {
+        cascade: true
+    })
+    @JoinTable({
+        name: "passport_tag", joinColumn: {
+            name: 'user_id',
+            referencedColumnName: 'id',
+        }, inverseJoinColumn: {
+            name: 'tag_id',
+            referencedColumnName: 'id',
+        },
+    })
+    tags: Tag[];
 }

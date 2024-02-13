@@ -11,9 +11,11 @@ import {PassportService} from "../passport/passport.service";
 import {RequestService} from "../request/request.service";
 import {CustomerCompanyService} from "../customer-company/customer-company.service";
 import {CustomerUserService} from "../customer-user/customer-user.service";
+import {Course} from "../course/entities/course.entity";
+import {Tag} from "../tag/entities/tag.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser])],
+    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag])],
     controllers: [AnalyticController],
     providers: [AnalyticService, PartnerService, PassportService, RequestService, CustomerCompanyService, CustomerUserService],
 })

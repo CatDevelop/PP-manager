@@ -22,3 +22,8 @@
 .students {
     flex-wrap: wrap;
 }
+
+.requestName__warning {
+    color: #737373;
+    font-size: 11px;
+}

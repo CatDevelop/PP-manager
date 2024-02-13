@@ -17,6 +17,7 @@ import { RequestModule } from './request/request.module';
 import { CustomerCompanyModule } from './customer-company/customer-company.module';
 import { CustomerUserModule } from './customer-user/customer-user.module';
 import { AnalyticModule } from './analytic/analytic.module';
+import { TagModule } from './tag/tag.module';
 
 @Module({
     imports: [
@@ -49,7 +50,8 @@ import { AnalyticModule } from './analytic/analytic.module';
         RequestModule,
         CustomerCompanyModule,
         CustomerUserModule,
-        AnalyticModule
+        AnalyticModule,
+        TagModule
     ],
     controllers: [AppController],
     providers: [AppService],
