@@ -93,6 +93,7 @@ export default function ProjectsTable(props) {
                     pageSize: 30,
                     showSizeChanger: false
                 }}
+                rowClassName={(record, index) => index % 2 === 0 ? '' : styles.darkRow}
             >
                 <Column
                     title="Паспорт"

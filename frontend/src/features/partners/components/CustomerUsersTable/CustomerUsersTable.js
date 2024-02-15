@@ -91,6 +91,7 @@ export default function CustomerUsersTable(props) {
                     pageSize: 30,
                     showSizeChanger: false
                 }}
+                rowClassName={(record, index) => index % 2 === 0 ? '' : styles.darkRow}
             >
                 {
                     props.columns.map(column => {

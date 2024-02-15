@@ -6,6 +6,9 @@
     height: 100%;
 }
 
+.darkRow {
+    background-color: rgba(230, 244, 255, 0.53);
+}
 
 .nameItem {
     display: flex;
