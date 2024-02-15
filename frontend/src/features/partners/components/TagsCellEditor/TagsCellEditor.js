@@ -84,10 +84,10 @@ export default function TagsCellEditor(props) {
                 className={styles.tags__editButton}
             />
             <Select
-                mode="tags"
                 style={{
                     width: '100%',
                 }}
+                showSearch={true}
 
                 placeholder="Выберите теги"
                 onChange={(value) => setPassportTags(value)}

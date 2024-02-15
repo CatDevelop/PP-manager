@@ -1,7 +1,6 @@
 import React from 'react';
 import {Outlet, useNavigate} from 'react-router-dom';
-import {Spotlight} from "@mantine/spotlight";
-import {FileAddOutlined, SearchOutlined} from "@ant-design/icons";
+import {FileAddOutlined} from "@ant-design/icons";
 import {MantineProvider} from '@mantine/core';
 import styles from "./MainLayout.module.css"
 
@@ -26,22 +25,11 @@ export default function MainLayout() {
     return (
         <div>
             <MantineProvider theme={{colorScheme: 'dark'}}>
-                {/*<Spotlight*/}
-                {/*    shortcut={['mod + F']}*/}
-                {/*    actions={actions}*/}
-                {/*    limit={3}*/}
-                {/*    searchProps={{*/}
-                {/*        searchIcon: <SearchOutlined/>,*/}
-                {/*        searchPlaceholder: "Поиск...",*/}
-                {/*        nothingFoundMessage: "Ничего не найдено..."*/}
-                {/*    }}*/}
-                {/*>*/}
-                    <div className={styles.mainLayout}>
-                        <div className={styles.mainLayout__app}>
-                            <Outlet/>
-                        </div>
+                <div className={styles.mainLayout}>
+                    <div className={styles.mainLayout__app}>
+                        <Outlet/>
                     </div>
-                {/*</Spotlight>*/}
+                </div>
             </MantineProvider>
         </div>
     );

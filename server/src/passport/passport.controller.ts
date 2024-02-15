@@ -5,34 +5,34 @@ import {UpdatePassportDto} from "./dto/update-passport.dto";
 
 @Controller('passport')
 export class PassportController {
-  constructor(private readonly passportService: PassportService) {
+    constructor(private readonly passportService: PassportService) {
 
-  }
+    }
 
-  @Get("/all/:period_id")
-  @UseGuards(JwtAuthGuard)
-  @UsePipes(new ValidationPipe())
-  findAll(@Param('period_id', ParseIntPipe) period_id: number) {
-    return this.passportService.findAll({period_id});
-  }
+    @Get("/all/:period_id")
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
+    findAll(@Param('period_id', ParseIntPipe) period_id: number) {
+        return this.passportService.findAll({period_id});
+    }
 
-  @Get("/all/for-students/:period_id")
-  @UsePipes(new ValidationPipe())
-  findAllForStudents(@Param('period_id', ParseIntPipe) period_id: number) {
-    return this.passportService.findAllForStudents({period_id});
-  }
+    @Get("/all/for-students/:period_id")
+    @UsePipes(new ValidationPipe())
+    findAllForStudents(@Param('period_id', ParseIntPipe) period_id: number) {
+        return this.passportService.findAllForStudents({period_id});
+    }
 
-  @Get(":id")
-  @UseGuards(JwtAuthGuard)
-  @UsePipes(new ValidationPipe())
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.passportService.findOne({id});
-  }
+    @Get(":id")
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.passportService.findOne({id});
+    }
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @UsePipes(new ValidationPipe())
-  update(@Param('id') id: string, @Body() updatePassportDto: UpdatePassportDto) {
-    return this.passportService.update(+id, updatePassportDto);
-  }
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
+    update(@Param('id') id: string, @Body() updatePassportDto: UpdatePassportDto) {
+        return this.passportService.update(+id, updatePassportDto);
+    }
 }
