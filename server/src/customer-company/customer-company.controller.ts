@@ -1,4 +1,4 @@
-import {Controller, Get, Param, ParseIntPipe, UseGuards} from '@nestjs/common';
+import {Controller, Get, Param, ParseIntPipe, UseGuards, UsePipes, ValidationPipe} from '@nestjs/common';
 import {CustomerCompanyService} from './customer-company.service';
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
 
@@ -9,6 +9,7 @@ export class CustomerCompanyController {
 
     @Get("/all/:period_id")
     @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
     findAll(@Param('period_id', ParseIntPipe) period_id: number) {
         return this.customerCompanyService.findAll({period_id});
     }

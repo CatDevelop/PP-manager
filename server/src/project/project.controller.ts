@@ -1,4 +1,16 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards} from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Body,
+    Patch,
+    Param,
+    Delete,
+    ParseIntPipe,
+    UseGuards,
+    UsePipes,
+    ValidationPipe
+} from '@nestjs/common';
 import {ProjectService} from './project.service';
 import {CreateProjectDto} from './dto/create-project.dto';
 import {UpdateProjectDto} from './dto/update-project.dto';
@@ -11,12 +23,14 @@ export class ProjectController {
 
     @Get(':year/:term')
     @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
     findAll(@Param('year', ParseIntPipe) year: number, @Param('term', ParseIntPipe) term: number) {
         return this.projectService.findAll({year, term});
     }
 
     @Get(':id')
     @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe())
     findOne(@Param('id') id: string) {
         return this.projectService.findOne(id);
     }

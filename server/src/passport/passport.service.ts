@@ -133,6 +133,52 @@ export class PassportService {
         return passports
     }
 
+    async findAllForStudents(findAllPassportsDto: FindAllPassportsDto) {
+        const passports = await this.passportRepository.find({
+            where: {request: {period_id: {id: findAllPassportsDto.period_id}}},
+            select: {
+                id: true,
+                short_name: true,
+                diploma_name: true,
+                team_count: true,
+                students_count: true,
+                kind: true,
+                tags: true,
+                request: {
+                    id: true,
+                    name: true,
+                    goal: true,
+                    result: true,
+                    description: true,
+                    criteria: true,
+                    max_copies: true,
+                    customer_user: {
+                        id: true,
+                        first_name: true,
+                        last_name: true,
+                        middle_name: true,
+                        customer_company: {
+                            id: true,
+                            name: true
+                        }
+                    }
+                },
+            },
+            relations: {
+                request: {
+                    period_id: true,
+                    customer_user: {
+                        customer_company: true
+                    }
+                },
+                course: true,
+                tags: true
+            },
+        })
+
+        return passports
+    }
+
     async findOne(findOnePassportDto: FindOnePassportDto) {
         if (!await this.isCreate(findOnePassportDto.id))
             throw new NotFoundException("Passport not found!")
