@@ -23,12 +23,13 @@ export class PassportService {
 
     async isCreate(id: number) {
         const passport = await this.passportRepository.findOneBy({id})
+        console.log(passport)
         return !!passport;
     }
 
     async create(createPassportDto: CreatePassportDto) {
-        if (!await this.isCreate(createPassportDto.id))
-            throw new BadRequestException("The passport already exist!");
+        if (await this.isCreate(createPassportDto.id))
+            throw new BadRequestException("The passport " + createPassportDto.id + " already exist!");
 
         const newPassport = {
             id: createPassportDto.id,

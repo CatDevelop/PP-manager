@@ -1,25 +1,21 @@
 import {Injectable} from '@nestjs/common';
-import {Cron} from "@nestjs/schedule";
+import {Cron, CronExpression} from "@nestjs/schedule";
 import {ConfigService} from "@nestjs/config";
+import {PartnerService} from "../partner/partner.service";
 
 @Injectable()
 export class SheduleManagerService {
-    constructor(private readonly configService: ConfigService) {
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly partnerService: PartnerService
+    ) {
     }
 
-    // @Cron("0 */1 * * * *")
-    // async handleCron() {
-    //     const postResponse = await fetch('https://compute.api.cloud.yandex.net/compute/v1/instances/fhmhtmqf4rga3slbcm41:start', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Authorization': this.configService.get("YANDEX_TOKEN")
-    //         },
-    //     });
-    //
-    //     if (postResponse.ok) {
-    //         console.log('Turn on pincode-dev.ru server');
-    //     } else {
-    //         console.log("Error from turn on pincode-dev.ru server ", postResponse)
-    //     }
-    // }
+
+    @Cron(CronExpression.EVERY_2_HOURS)
+    async handleCron() {
+        const tokens = await this.partnerService.getTokens();
+        await this.partnerService.parseRequests(tokens);
+        await this.partnerService.parsePassports(tokens);
+    }
 }

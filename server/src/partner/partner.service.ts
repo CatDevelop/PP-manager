@@ -38,7 +38,6 @@ export class PartnerService {
         const driver = new Builder().forBrowser('chrome').setChromeOptions(options).build();
         try {
             await driver.get("https://partner.urfu.ru");
-            console.log('Website opened successfully!');
             const loginButton = driver.wait(
                 until.elementLocated(By.className('login-btn')),
                 5000
@@ -137,7 +136,7 @@ export class PartnerService {
                 throw new BadRequestException(error)
             }
         }
-        console.log("End of parse")
+        console.log("End of parse requests")
     }
 
     async parsePassports(parsePassportsDto: ParsePassportsDto) {
@@ -169,6 +168,8 @@ export class PartnerService {
                         ...parsePassportsDto,
                         id: currentPassport.source.id
                     })
+
+                    console.log(currentPassport)
 
                     if (!await this.customerCompanyService.isCreate(currentRequest.partner.id)) {
                         // Компании заказчика не существует
