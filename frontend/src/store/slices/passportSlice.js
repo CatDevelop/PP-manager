@@ -52,7 +52,7 @@ export const updatePassportTag = createAsyncThunk(
             }
 
             response = await response.json()
-            dispatch(getPassport(data.id))
+            // dispatch(getPassport(data.id))
 
             return response;
         } catch (error) {

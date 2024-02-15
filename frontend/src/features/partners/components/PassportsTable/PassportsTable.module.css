@@ -27,3 +27,16 @@
     color: #737373;
     font-size: 11px;
 }
+
+
+.tags__list {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tags__editButton {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}

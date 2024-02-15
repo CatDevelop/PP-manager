@@ -42,6 +42,22 @@ export const initialPassportsTableColumns = [
         name: 'Тип проекта',
     },
     {
+        key: 'request_goal',
+        name: 'Цель',
+    },
+    {
+        key: 'request_result',
+        name: 'Результат',
+    },
+    {
+        key: 'request_description',
+        name: 'Описание',
+    },
+    {
+        key: 'request_criteria',
+        name: 'Критерии оценивания',
+    },
+    {
         key: 'status',
         name: 'Статус',
     },
@@ -120,6 +136,10 @@ export function PartnersPassportsPage() {
             request_uid: passport.request.uid,
             request_date: new Date(Date.parse(passport.request.date)),
             request_date_string: new Date(Date.parse(passport.request.date)).toLocaleDateString(),
+            request_goal: passport.request.goal,
+            request_result: passport.request.result,
+            request_description: passport.request.description,
+            request_criteria: passport.request.criteria,
             course: passport.course,
             period: passport.request.period_id,
             customer_id: passport.request.customer_user.id,
@@ -184,6 +204,7 @@ export function PartnersPassportsPage() {
                 passports.isLoading ?
                     <Spin/> :
                     <PassportsTable
+                        defaultPassports={passports}
                         passports={passportsTable}
                         columns={passportsTableColumns}
                         setIsPassportEditOpen={setIsPassportEditOpen}

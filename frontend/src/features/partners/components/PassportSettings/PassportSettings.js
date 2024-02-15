@@ -125,7 +125,6 @@ export default function PassportSettings(props) {
                         value={passportTags}
                     />
                 </div>
-
             </div>
         </Drawer>
     );

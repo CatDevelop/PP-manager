@@ -3,9 +3,10 @@ import {Link, useNavigate} from 'react-router-dom';
 import {App, Button, Dropdown, Input, Menu, Space, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./PassportsTable.module.css"
-import {SearchOutlined} from "@ant-design/icons";
+import {EditOutlined, SearchOutlined} from "@ant-design/icons";
 import {getAllTags} from "../../../../store/slices/tagsSlice";
 import {useTags} from "../../../../hooks/use-tags";
+import TagsCellEditor from "../TagsCellEditor/TagsCellEditor";
 
 const {Column, ColumnGroup} = Table;
 const {TextArea} = Input;
@@ -185,7 +186,7 @@ export default function PassportsTable(props) {
                                 title="Номер заявки"
                                 width={100}
                                 dataIndex="request_uid"
-                                key="request_гid"
+                                key="request_uid"
                                 render={(value, record) => {
                                     return (
                                         <Dropdown
@@ -200,7 +201,7 @@ export default function PassportsTable(props) {
                                         </Dropdown>
                                     )
                                 }}
-                                {...getColumnSearchProps("request_гid")}
+                                {...getColumnSearchProps("request_uid")}
                             />
 
                         if (column.key === "request_date")
@@ -241,20 +242,22 @@ export default function PassportsTable(props) {
                             return (
                                 <Column
                                     title="Теги"
-                                    width={100}
+                                    width={200}
                                     dataIndex="tags"
                                     key="tags"
                                     render={(value, record) => {
-                                        return (
-                                            <div>
-                                                {value.map(tag => {
-                                                    return <Tag color={tag.color}>{tag.text}</Tag>
-                                                })}
-                                            </div>
-                                        )
+                                        return <TagsCellEditor
+                                            value={value}
+                                            tags={!tags.isLoading ? tags.tags : []}
+                                            passport={record}
+                                            passports={props.defaultPassports.passports}
+                                        />
                                     }}
-                                    filters={!tags.isLoading ? tags.tags.map(tag => ({text: tag.text, value: tag.id})) : []}
-                                    onFilter={(value, record) => record.tags.find(t => t.id === value) }
+                                    filters={!tags.isLoading ? tags.tags.map(tag => ({
+                                        text: tag.text,
+                                        value: tag.id
+                                    })) : []}
+                                    onFilter={(value, record) => record.tags.find(t => t.id === value)}
                                 />
                             )
 
@@ -308,6 +311,54 @@ export default function PassportsTable(props) {
                                 onFilter={(value, record) => record.course.filter(course => course.number === value).length !== 0}
                             />
 
+                        if (column.key === "request_goal")
+                            return <Column
+                                title="Цель"
+                                width={200}
+                                dataIndex="request_goal"
+                                key="request_goal"
+                                render={(value, record) => {
+                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                }}
+                                {...getColumnSearchProps("request_goal")}
+                            />
+
+                        if (column.key === "request_result")
+                            return <Column
+                                title="Результат"
+                                width={200}
+                                dataIndex="request_result"
+                                key="request_result"
+                                render={(value, record) => {
+                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                }}
+                                {...getColumnSearchProps("request_result")}
+                            />
+
+                        if (column.key === "request_description")
+                            return <Column
+                                title="Описание"
+                                width={500}
+                                dataIndex="request_description"
+                                key="request_description"
+                                render={(value, record) => {
+                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                }}
+                                {...getColumnSearchProps("request_description")}
+                            />
+
+                        if (column.key === "request_criteria")
+                            return <Column
+                                title="Критерии оценивания"
+                                width={300}
+                                dataIndex="request_criteria"
+                                key="request_criteria"
+                                render={(value, record) => {
+                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                }}
+                                {...getColumnSearchProps("request_criteria")}
+                            />
+
                         if (column.key === "customer_company_name")
                             return <Column
                                 title="Заказчик"
@@ -336,23 +387,23 @@ export default function PassportsTable(props) {
                             />
                     })
                 }
-                <Column
-                    width={90}
-                    title="Действие"
-                    key="action"
-                    render={(value, record) => {
-                        return <Space size="middle">
-                            <a
-                                onClick={() => {
-                                    props.setIsPassportEditOpen(true);
-                                    props.setEditPassportId(record.id)
-                                }}
-                            >
-                                Редактировать
-                            </a>
-                        </Space>
-                    }}
-                />
+                {/*<Column*/}
+                {/*    width={90}*/}
+                {/*    title="Действие"*/}
+                {/*    key="action"*/}
+                {/*    render={(value, record) => {*/}
+                {/*        return <Space size="middle">*/}
+                {/*            <a*/}
+                {/*                onClick={() => {*/}
+                {/*                    props.setIsPassportEditOpen(true);*/}
+                {/*                    props.setEditPassportId(record.id)*/}
+                {/*                }}*/}
+                {/*            >*/}
+                {/*                Редактировать*/}
+                {/*            </a>*/}
+                {/*        </Space>*/}
+                {/*    }}*/}
+                {/*/>*/}
             </Table>
         </div>
     );
