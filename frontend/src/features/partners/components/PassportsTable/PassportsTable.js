@@ -1,15 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import {App, Button, Dropdown, Input, Menu, Space, Table, Tag} from "antd";
+import {useNavigate} from 'react-router-dom';
+import {App, Button, Dropdown, Input, Space, Table, Tag, Typography} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./PassportsTable.module.css"
-import {EditOutlined, SearchOutlined} from "@ant-design/icons";
+import {SearchOutlined} from "@ant-design/icons";
 import {getAllTags} from "../../../../store/slices/tagsSlice";
 import {useTags} from "../../../../hooks/use-tags";
 import TagsCellEditor from "../TagsCellEditor/TagsCellEditor";
+import parse from 'html-react-parser';
 
 const {Column, ColumnGroup} = Table;
 const {TextArea} = Input;
+const {Paragraph} = Typography;
 
 export default function PassportsTable(props) {
     const navigate = useNavigate()
@@ -318,7 +320,11 @@ export default function PassportsTable(props) {
                                 dataIndex="request_goal"
                                 key="request_goal"
                                 render={(value, record) => {
-                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
                                 }}
                                 {...getColumnSearchProps("request_goal")}
                             />
@@ -330,7 +336,11 @@ export default function PassportsTable(props) {
                                 dataIndex="request_result"
                                 key="request_result"
                                 render={(value, record) => {
-                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
                                 }}
                                 {...getColumnSearchProps("request_result")}
                             />
@@ -342,7 +352,11 @@ export default function PassportsTable(props) {
                                 dataIndex="request_description"
                                 key="request_description"
                                 render={(value, record) => {
-                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
                                 }}
                                 {...getColumnSearchProps("request_description")}
                             />
@@ -354,7 +368,11 @@ export default function PassportsTable(props) {
                                 dataIndex="request_criteria"
                                 key="request_criteria"
                                 render={(value, record) => {
-                                    return <div dangerouslySetInnerHTML={{__html: value}}/>
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
                                 }}
                                 {...getColumnSearchProps("request_criteria")}
                             />

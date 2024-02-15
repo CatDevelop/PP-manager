@@ -88,7 +88,12 @@ export default function TagsCellEditor(props) {
                     width: '100%',
                 }}
                 showSearch={true}
-
+                optionFilterProp="children"
+                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                mode="multiple"
                 placeholder="Выберите теги"
                 onChange={(value) => setPassportTags(value)}
                 options={tagOptions}

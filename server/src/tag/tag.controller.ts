@@ -22,7 +22,6 @@ export class TagController {
     }
 
     @Get('all')
-    @UseGuards(JwtAuthGuard)
     @UsePipes(new ValidationPipe())
     findAll() {
         return this.tagService.findAll();

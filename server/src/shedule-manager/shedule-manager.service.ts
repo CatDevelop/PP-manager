@@ -10,7 +10,7 @@ export class SheduleManagerService {
         private readonly partnerService: PartnerService
     ) {
     }
-    
+
     @Cron(CronExpression.EVERY_2_HOURS)
     async handleCron() {
         const tokens = await this.partnerService.getTokens();
