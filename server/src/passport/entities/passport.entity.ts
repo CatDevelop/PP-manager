@@ -1,8 +1,6 @@
-import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryColumn} from "typeorm";
-import {Period} from "../../period/entities/period.entity";
+import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryColumn} from "typeorm";
 import {Course} from "../../course/entities/course.entity";
 import {Request} from "../../request/entities/request.entity";
-import {Tag} from "../../tag/entities/tag.entity";
 
 @Entity()
 export class Passport {
@@ -34,7 +32,7 @@ export class Passport {
     kind: string;
 
     @ManyToOne(() => Request, (request) => request.id, {nullable: true})
-    @JoinColumn({ name: 'request'})
+    @JoinColumn({name: 'request'})
     request: Request;
 
     @ManyToMany(() => Course, (course) => course.passports, {onDelete: "CASCADE"})
@@ -48,18 +46,4 @@ export class Passport {
         },
     })
     course: Course[]
-
-    @ManyToMany(() => Tag, (tag) => tag.passports, {
-        cascade: true
-    })
-    @JoinTable({
-        name: "passport_tag", joinColumn: {
-            name: 'user_id',
-            referencedColumnName: 'id',
-        }, inverseJoinColumn: {
-            name: 'tag_id',
-            referencedColumnName: 'id',
-        },
-    })
-    tags: Tag[];
 }

@@ -18,8 +18,8 @@ export class TagService {
     }
 
     async isCreate(id: number) {
-        const passport = await this.tagRepository.findOneBy({id})
-        return !!passport;
+        const tag = await this.tagRepository.findOneBy({id})
+        return !!tag;
     }
 
     async create(createTagDto: CreateTagDto) {
@@ -40,7 +40,7 @@ export class TagService {
     async findAll() {
         const tags = await this.tagRepository.find({
             relations: {
-                passports: true
+                requests: true
             },
         })
 

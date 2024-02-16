@@ -6,7 +6,6 @@ import {Passport} from "./entities/passport.entity";
 import {UpdatePassportDto} from "./dto/update-passport.dto";
 import {FindAllPassportsDto} from "./dto/find-all-passports.dto";
 import {Course} from "../course/entities/course.entity";
-import {Tag} from "../tag/entities/tag.entity";
 import {FindOnePassportDto} from "./dto/find-one-passport.dto";
 
 @Injectable()
@@ -16,8 +15,6 @@ export class PassportService {
         private readonly passportRepository: Repository<Passport>,
         @InjectRepository(Course)
         private readonly courseRepository: Repository<Course>,
-        @InjectRepository(Tag)
-        private readonly tagRepository: Repository<Tag>,
     ) {
     }
 
@@ -70,21 +67,6 @@ export class PassportService {
             delete updatePassportDto["course"];
         }
 
-        if ("tags" in updatePassportDto) {
-            const tagsExists = await this.tagRepository.countBy(
-                updatePassportDto.tags.map(tag => ({id: tag}))
-            )
-
-            if (updatePassportDto.tags.length !== 0 && tagsExists !== updatePassportDto.tags.length)
-                throw new BadRequestException("The tag does not exist!");
-
-            await this.passportRepository.save({
-                ...passport,
-                tags: updatePassportDto.tags.map(tag => ({id: tag}))
-            })
-            delete updatePassportDto["tags"];
-        }
-
         if ("request_id" in updatePassportDto) {
             await this.passportRepository.update(passport.id, {
                 request: {id: updatePassportDto.request_id},
@@ -120,13 +102,13 @@ export class PassportService {
             // },
             relations: {
                 request: {
+                    tags: true,
                     period_id: true,
                     customer_user: {
                         customer_company: true
                     }
                 },
                 course: true,
-                tags: true
             },
         })
 
@@ -143,7 +125,6 @@ export class PassportService {
                 team_count: true,
                 students_count: true,
                 kind: true,
-                tags: true,
                 request: {
                     id: true,
                     name: true,
@@ -152,6 +133,7 @@ export class PassportService {
                     description: true,
                     criteria: true,
                     max_copies: true,
+                    tags: true,
                     customer_user: {
                         id: true,
                         first_name: true,
@@ -172,7 +154,6 @@ export class PassportService {
                     }
                 },
                 course: true,
-                tags: true
             },
         })
 
@@ -188,12 +169,12 @@ export class PassportService {
             relations: {
                 request: {
                     period_id: true,
+                    tags: true,
                     customer_user: {
                         customer_company: true
                     }
                 },
                 course: true,
-                tags: true
             },
         })
 

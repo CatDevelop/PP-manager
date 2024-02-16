@@ -6,12 +6,15 @@ import {Request} from "./entities/request.entity"
 import {UpdateCustomerUserDto} from "../customer-user/dto/update-customer-user.dto";
 import {UpdateRequestDto} from "./dto/update-request.dto";
 import {FindAllPassportsDto} from "../passport/dto/find-all-passports.dto";
+import {Tag} from "../tag/entities/tag.entity";
 
 @Injectable()
 export class RequestService {
     constructor(
         @InjectRepository(Request)
         private readonly requestRepository: Repository<Request>,
+        @InjectRepository(Tag)
+        private readonly tagRepository: Repository<Tag>,
     ) {
     }
 
@@ -52,19 +55,38 @@ export class RequestService {
         if (!request)
             throw new NotFoundException("Request not found!")
 
-        await this.requestRepository.update(request.id, {
-            uid: updateRequestDto.uid,
-            name: updateRequestDto.name,
-            date: updateRequestDto.date,
-            goal: updateRequestDto.goal,
-            result: updateRequestDto.result,
-            status: updateRequestDto.status,
-            description: updateRequestDto.description,
-            criteria: updateRequestDto.criteria,
-            max_copies: updateRequestDto.max_copies,
-            period_id: {id: updateRequestDto.period_id},
-            customer_user: {id: updateRequestDto.customer_user_id}
-        });
+        if ("tags" in updateRequestDto) {
+            const tagsExists = await this.tagRepository.countBy(
+                updateRequestDto.tags.map(tag => ({id: tag}))
+            )
+
+            if (updateRequestDto.tags.length !== 0 && tagsExists !== updateRequestDto.tags.length)
+                throw new BadRequestException("The tag does not exist!");
+
+            await this.requestRepository.save({
+                ...request,
+                tags: updateRequestDto.tags.map(tag => ({id: tag}))
+            })
+            delete updateRequestDto["tags"];
+        }
+
+        if ("period_id" in updateRequestDto) {
+            await this.requestRepository.update(request.id, {
+                period_id: {id: updateRequestDto.period_id},
+            });
+            delete updateRequestDto["period_id"];
+        }
+
+        if ("customer_user" in updateRequestDto) {
+            await this.requestRepository.update(request.id, {
+                customer_user: {id: updateRequestDto.customer_user_id},
+            });
+            delete updateRequestDto["customer_user"];
+        }
+
+        if (Object.keys(updateRequestDto).length > 0)
+            // @ts-ignore
+            await this.requestRepository.update(request.id, updateRequestDto);
 
         return this.requestRepository.findOne({
             where: {id},
@@ -89,6 +111,7 @@ export class RequestService {
             //     updated_at: true
             // },
             relations: {
+                tags: true,
                 passports: true,
                 period_id: true,
                 customer_user: {

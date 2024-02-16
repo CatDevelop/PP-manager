@@ -1,5 +1,6 @@
 import {Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Passport} from "../../passport/entities/passport.entity";
+import {Request} from "../../request/entities/request.entity";
 
 @Entity()
 export class Tag {
@@ -12,7 +13,6 @@ export class Tag {
     @Column()
     color: string;
 
-
-    @ManyToMany(() => Passport, (passport) => passport.tags, {onDelete: "CASCADE"})
-    passports: Passport[]
+    @ManyToMany(() => Request, (request) => request.tags, {onDelete: "CASCADE"})
+    requests: Request[]
 }

@@ -4,10 +4,9 @@ import {PassportController} from './passport.controller';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Passport} from "./entities/passport.entity";
 import {Course} from "../course/entities/course.entity";
-import {Tag} from "../tag/entities/tag.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Passport, Course, Tag])],
+    imports: [TypeOrmModule.forFeature([Passport, Course])],
     controllers: [PassportController],
     providers: [PassportService],
 })

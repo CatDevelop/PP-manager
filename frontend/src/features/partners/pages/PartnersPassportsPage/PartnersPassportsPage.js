@@ -148,7 +148,7 @@ export function PartnersPassportsPage() {
             customer_last_name: passport.request.customer_user.last_name,
             customer_middle_name: passport.request.customer_user.middle_name,
             customer_company_name: passport.request.customer_user.customer_company.name,
-            tags: passport.tags
+            tags: passport.request.tags
         })))
     }, [passports])
 

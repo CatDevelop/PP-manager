@@ -1,9 +1,8 @@
 import {Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn} from "typeorm";
 import {Period} from "../../period/entities/period.entity";
-import {Course} from "../../course/entities/course.entity";
 import {Passport} from "../../passport/entities/passport.entity";
-import {CustomerCompany} from "../../customer-company/entities/customer-company.entity";
 import {CustomerUser} from "../../customer-user/entities/customer-user.entity";
+import {Tag} from "../../tag/entities/tag.entity";
 
 @Entity()
 export class Request {
@@ -51,4 +50,18 @@ export class Request {
     @ManyToOne(() => CustomerUser, (customerUser) => customerUser.id, {nullable: true})
     @JoinColumn({ name: 'customer_user'})
     customer_user: CustomerUser;
+
+    @ManyToMany(() => Tag, (tag) => tag.requests, {
+        cascade: true
+    })
+    @JoinTable({
+        name: "request_tag", joinColumn: {
+            name: 'request_id',
+            referencedColumnName: 'id',
+        }, inverseJoinColumn: {
+            name: 'tag_id',
+            referencedColumnName: 'id',
+        },
+    })
+    tags: Tag[];
 }
