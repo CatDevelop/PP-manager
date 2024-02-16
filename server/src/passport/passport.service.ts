@@ -117,7 +117,7 @@ export class PassportService {
 
     async findAllForStudents(findAllPassportsDto: FindAllPassportsDto) {
         const passports = await this.passportRepository.find({
-            where: {request: {period_id: {id: findAllPassportsDto.period_id}}},
+            where: {request: {period_id: {id: findAllPassportsDto.period_id}}, is_visible: true},
             select: {
                 id: true,
                 short_name: true,
