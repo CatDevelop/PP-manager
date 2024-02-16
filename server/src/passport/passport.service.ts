@@ -148,6 +148,7 @@ export class PassportService {
             },
             relations: {
                 request: {
+                    tags: true,
                     period_id: true,
                     customer_user: {
                         customer_company: true
