@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {App, Button, Checkbox, Input, Select, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./PassportIsVisibleEditor.module.css"
-import {updatePassportTag} from "../../../../store/slices/passportSlice";
+import {updatePassport, updatePassportTag} from "../../../../store/slices/passportSlice";
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
 import {setPassports} from "../../../../store/slices/passportsSlice";
 import {updateRequestTag} from "../../../../store/slices/requestSlice";
@@ -21,7 +21,7 @@ export default function PassportIsVisibleEditor(props) {
             setIsLoading(true);
             message.loading({content: "Сохраняю паспорт...", key: 'updatePassportVisible', duration: 0})
 
-            dispatch(updateRequestTag({
+            dispatch(updatePassport({
                 id: props.passport.id,
                 is_visible: value
             })).then((response) => {
@@ -42,8 +42,8 @@ export default function PassportIsVisibleEditor(props) {
 
     return (
         <div className={styles.tags__container}>
-            <Checkbox value={props.value}
-                      onChange={(value) => savePassport(value)}
+            <Checkbox checked={props.value}
+                      onChange={(e) => savePassport(e.target.checked)}
             />
         </div>
     );

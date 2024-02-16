@@ -3,6 +3,5 @@ import {CreatePassportDto} from "./create-passport.dto";
 import {IsBoolean} from "class-validator";
 
 export class UpdatePassportDto extends PartialType(CreatePassportDto) {
-    @IsBoolean()
     is_visible?: boolean;
 }
