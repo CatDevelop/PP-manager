@@ -31,6 +31,9 @@ export class Passport {
     @Column({nullable: true})
     kind: string;
 
+    @Column({default: true})
+    is_visible: boolean;
+
     @ManyToOne(() => Request, (request) => request.id, {nullable: true})
     @JoinColumn({name: 'request'})
     request: Request;

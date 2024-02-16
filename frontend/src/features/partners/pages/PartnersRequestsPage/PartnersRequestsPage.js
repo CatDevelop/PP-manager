@@ -9,6 +9,8 @@ import RequestsTableSettings from "../../components/RequestsTableSettings/Reques
 import {useRequests} from "../../../../hooks/use-requests";
 import {getAllRequests} from "../../../../store/slices/requestsSlice";
 import RequestsTable from "../../components/RequestsTable/RequestsTable";
+import {removeProjects} from "../../../../store/slices/projectsSlice";
+import {removePassports} from "../../../../store/slices/passportsSlice";
 
 export const initialRequestsTableColumns = [
     {
@@ -24,8 +26,28 @@ export const initialRequestsTableColumns = [
         name: 'Название',
     },
     {
+        key: 'goal',
+        name: 'Цель',
+    },
+    {
+        key: 'result',
+        name: 'Результат',
+    },
+    {
+        key: 'description',
+        name: 'Описание',
+    },
+    {
+        key: 'criteria',
+        name: 'Критерии оценивания',
+    },
+    {
         key: 'status',
         name: 'Статус',
+    },
+    {
+        key: 'tags',
+        name: 'Теги',
     },
     {
         key: 'customer_company_name',
@@ -73,6 +95,7 @@ export function PartnersRequestsPage() {
 
     useEffect(() => {
         dispatch(removeProject())
+        dispatch(removePassports())
     }, []);
 
     useEffect(() => {
@@ -80,11 +103,16 @@ export function PartnersRequestsPage() {
             id: request.id,
             uid: request.uid,
             name: request.name,
+            goal: request.goal,
+            result: request.result,
+            description: request.description,
+            criteria: request.criteria,
             date: new Date(Date.parse(request.date)),
             date_string: new Date(Date.parse(request.date)).toLocaleDateString(),
             max_copies: request.max_copies,
             status: request.status,
             period: request.period_id,
+            tags: request.tags,
             customer_id: request.customer_user.id,
             customer_name: (request.customer_user.first_name || "") + " " + (request.customer_user.last_name || "") + " " + (request.customer_user.middle_name || ""),
             customer_first_name: request.customer_user.first_name,
@@ -145,7 +173,11 @@ export function PartnersRequestsPage() {
             {
                 requests.isLoading ?
                     <Spin/> :
-                    <RequestsTable requests={requestsTable} columns={requestsTableColumns}/>
+                    <RequestsTable
+                        defaultRequests={requests}
+                        requests={requestsTable}
+                        columns={requestsTableColumns}
+                    />
             }
 
             <RequestsTableSettings

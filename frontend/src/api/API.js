@@ -13,6 +13,7 @@ const GET_CUSTOMER_COMPANIES = `${HOST}/customer-company/all`;
 const GET_CUSTOMER_USERS = `${HOST}/customer-user/all`;
 const GET_MAIN_ANALYTICS = `${HOST}/analytic/main`;
 const PARSE_PROJECTS = `${HOST}/teamproject/parse`;
+const UPDATE_REQUEST = `${HOST}/request`;
 const UPDATE_PASSPORT = `${HOST}/passport`;
 
 const API = {
@@ -28,6 +29,7 @@ const API = {
     GET_CUSTOMER_USERS,
     GET_TAGS,
     GET_PASSPORT,
+    UPDATE_REQUEST,
     UPDATE_PASSPORT
 };
 

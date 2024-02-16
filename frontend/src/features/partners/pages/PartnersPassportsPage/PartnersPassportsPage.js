@@ -11,6 +11,8 @@ import PassportsTable from "../../components/PassportsTable/PassportsTable";
 import PassportsTableSettings from "../../components/PassportsTableSettings/PassportsTableSettings";
 import PassportSettings from "../../components/PassportSettings/PassportSettings";
 import {removePassport} from "../../../../store/slices/passportSlice";
+import {removeProjects} from "../../../../store/slices/projectsSlice";
+import {removeRequests} from "../../../../store/slices/requestsSlice";
 
 export const initialPassportsTableColumns = [
     {
@@ -77,6 +79,10 @@ export const initialPassportsTableColumns = [
         key: 'available_seats_number',
         name: 'Количество мест',
     },
+    {
+        key: 'is_visible',
+        name: 'Виден студентам',
+    },
 ]
 
 export function PartnersPassportsPage() {
@@ -116,6 +122,7 @@ export function PartnersPassportsPage() {
 
     useEffect(() => {
         dispatch(removeProject())
+        dispatch(removeRequests())
     }, []);
 
     useEffect(() => {
@@ -148,7 +155,8 @@ export function PartnersPassportsPage() {
             customer_last_name: passport.request.customer_user.last_name,
             customer_middle_name: passport.request.customer_user.middle_name,
             customer_company_name: passport.request.customer_user.customer_company.name,
-            tags: passport.request.tags
+            tags: passport.request.tags,
+            is_visible: passport.is_visible
         })))
     }, [passports])
 
@@ -219,17 +227,6 @@ export function PartnersPassportsPage() {
                 tableColumns={passportsTableColumns}
                 setTableColumns={setPassportsTableColumns}
             />
-
-            {
-                editPassportId &&
-                <PassportSettings
-                    period_id={8}
-                    isOpen={isPassportEditOpen}
-                    setIsOpen={setIsPassportEditOpen}
-                    editPassportId={editPassportId}
-                    setEditPassportId={setEditPassportId}
-                />
-            }
         </div>
     )
 }

@@ -97,81 +97,17 @@ export default function RequestsTableSettings(props) {
                     </Button>
                 </div>
                 <div className={styles.columnSwitchs}>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "uid")} onChange={(value) => {
-                            value ? props.setTableColumns([...props.tableColumns, {
-                                    key: 'uid',
-                                    name: 'Номер',
-                                }]) :
-                                props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'uid')])
-                        }}/>
-                        Номер
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "date")} onChange={(value) => {
-                            value ? props.setTableColumns([...props.tableColumns, {
-                                    key: 'date',
-                                    name: 'Дата',
-                                }]) :
-                                props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'date')])
-                        }}/>
-                        Дата
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "name")}
-                                onChange={(value) => {
-                                    value ? props.setTableColumns([...props.tableColumns, {
-                                            key: 'name',
-                                            name: 'Название',
-                                        }]) :
-                                        props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'name')])
+                    {
+                        initialRequestsTableColumns.map(column => {
+                            return <div className={styles.columnSwitch}>
+                                <Switch value={props.tableColumns.find(tableColumn => tableColumn.key === column.key)} onChange={(value) => {
+                                    value ? props.setTableColumns([...props.tableColumns, column]) :
+                                        props.setTableColumns([...props.tableColumns.filter(tableColumn => tableColumn.key !== column.key)])
                                 }}/>
-                        Название
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "status")}
-                                onChange={(value) => {
-                                    value ? props.setTableColumns([...props.tableColumns, {
-                                            key: 'status',
-                                            name: 'Статус',
-                                        }]) :
-                                        props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'status')])
-                                }}/>
-                        Статус
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "customer_company_name")}
-                                onChange={(value) => {
-                                    value ? props.setTableColumns([...props.tableColumns, {
-                                            key: 'customer_company_name',
-                                            name: 'Заказчик',
-                                        }]) :
-                                        props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'customer_company_name')])
-                                }}/>
-                        Заказчик
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "customer_name")}
-                                onChange={(value) => {
-                                    value ? props.setTableColumns([...props.tableColumns, {
-                                            key: 'customer_name',
-                                            name: 'Представитель заказчика',
-                                        }]) :
-                                        props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'customer_name')])
-                                }}/>
-                        Представитель заказчика
-                    </div>
-                    <div className={styles.columnSwitch}>
-                        <Switch value={props.tableColumns.find(column => column.key === "max_copies")}
-                                onChange={(value) => {
-                                    value ? props.setTableColumns([...props.tableColumns, {
-                                            key: 'max_copies',
-                                            name: 'Максимальное количество копий',
-                                        }]) :
-                                        props.setTableColumns([...props.tableColumns.filter(column => column.key !== 'max_copies')])
-                                }}/>
-                        Максимальное количество копий
-                    </div>
+                                {column.name}
+                            </div>
+                        })
+                    }
                 </div>
 
                 <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>

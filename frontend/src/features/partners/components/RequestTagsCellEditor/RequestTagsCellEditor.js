@@ -1,21 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {App, Button, Input, Select, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
-import styles from "./TagsCellEditor.module.css"
-import {updatePassportTag} from "../../../../store/slices/passportSlice";
+import styles from "./RequestTagsCellEditor.module.css"
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
 import {setPassports} from "../../../../store/slices/passportsSlice";
+import {updateRequestTag} from "../../../../store/slices/requestSlice";
+import {setRequests} from "../../../../store/slices/requestsSlice";
 
 const {TextArea} = Input;
 const {Column, ColumnGroup} = Table;
 
 
-export default function TagsCellEditor(props) {
+export default function RequestTagsCellEditor(props) {
     const {message} = App.useApp();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState([])
-    const [passportTags, setPassportTags] = useState([])
+    const [requestTags, setRequestTags] = useState([])
 
     const [isEdit, setIsEdit] = useState(false)
     useEffect(() => {
@@ -26,8 +27,8 @@ export default function TagsCellEditor(props) {
     }, [props.tags])
 
     useEffect(() => {
-        setPassportTags(props.passport.tags.map(tag => tag.id))
-    }, [props.passport])
+        setRequestTags(props.request.tags.map(tag => tag.id))
+    }, [props.request])
 
 
     if (!isEdit) {
@@ -48,25 +49,25 @@ export default function TagsCellEditor(props) {
         )
     }
 
-    const savePassport = () => {
+    const saveRequest = () => {
         if (!isLoading) {
             setIsLoading(true);
-            message.loading({content: "Сохраняю паспорт...", key: 'updatePassport', duration: 0})
+            message.loading({content: "Сохраняю заявку...", key: 'updateRequest', duration: 0})
 
-            dispatch(updatePassportTag({
-                id: props.passport.id,
-                tags: passportTags
+            dispatch(updateRequestTag({
+                id: props.request.id,
+                tags: requestTags
             })).then((response) => {
                 setIsLoading(false)
-                message.destroy('updatePassport')
-                message.success({content: "Вы успешно обновили паспорт"})
-                let newPassports = [...props.passports]
-                let currentIndex = newPassports.findIndex(passport => passport.id === props.passport.id)
-                newPassports[currentIndex] = {...newPassports[currentIndex], tags: props.tags.filter(tag => passportTags.includes(tag.id))};
-                dispatch(setPassports(newPassports))
+                message.destroy('updateRequest')
+                message.success({content: "Вы успешно обновили заявку!"})
+                let newRequests = [...props.requests]
+                let currentIndex = newRequests.findIndex(request => request.id === props.request.id)
+                newRequests[currentIndex] = {...newRequests[currentIndex], tags: props.tags.filter(tag => requestTags.includes(tag.id))};
+                dispatch(setRequests(newRequests))
             }, (error) => {
                 setIsLoading(false)
-                message.destroy('updatePassport')
+                message.destroy('updateRequest')
                 message.error({content: error.message})
             });
         }
@@ -79,7 +80,7 @@ export default function TagsCellEditor(props) {
                 type="text"
                 onClick={() => {
                     setIsEdit(false);
-                    savePassport();
+                    saveRequest();
                 }}
                 className={styles.tags__editButton}
             />
@@ -95,9 +96,9 @@ export default function TagsCellEditor(props) {
                 }
                 mode="multiple"
                 placeholder="Выберите теги"
-                onChange={(value) => setPassportTags(value)}
+                onChange={(value) => setRequestTags(value)}
                 options={tagOptions}
-                value={passportTags}
+                value={requestTags}
             />
         </div>
     );

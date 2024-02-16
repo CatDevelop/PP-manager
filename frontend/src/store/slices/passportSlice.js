@@ -31,8 +31,8 @@ export const getPassport = createAsyncThunk(
     }
 );
 
-export const updatePassportTag = createAsyncThunk(
-    'passport/tag/update',
+export const updatePassport = createAsyncThunk(
+    'passport/update',
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
@@ -43,7 +43,7 @@ export const updatePassportTag = createAsyncThunk(
                         "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken"),
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({tags: data.tags})
+                    body: JSON.stringify(data)
                 }
             );
 
@@ -81,6 +81,9 @@ const passportSlice = createSlice({
         },
         extraReducers: builder => builder
             .addCase(getPassport.rejected, (state, action) => {
+                throw new Error(action.payload);
+            })
+            .addCase(updatePassport.rejected, (state, action) => {
                 throw new Error(action.payload);
             })
     })

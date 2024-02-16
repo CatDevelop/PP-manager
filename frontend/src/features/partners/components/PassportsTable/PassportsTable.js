@@ -6,8 +6,9 @@ import styles from "./PassportsTable.module.css"
 import {SearchOutlined} from "@ant-design/icons";
 import {getAllTags} from "../../../../store/slices/tagsSlice";
 import {useTags} from "../../../../hooks/use-tags";
-import TagsCellEditor from "../TagsCellEditor/TagsCellEditor";
+import PassportTagsCellEditor from "../PassportTagsCellEditor/PassportTagsCellEditor";
 import parse from 'html-react-parser';
+import PassportIsVisibleEditor from "../PassportIsVisibleEditor/PassportIsVisibleEditor";
 
 const {Column, ColumnGroup} = Table;
 const {TextArea} = Input;
@@ -249,7 +250,7 @@ export default function PassportsTable(props) {
                                     dataIndex="tags"
                                     key="tags"
                                     render={(value, record) => {
-                                        return <TagsCellEditor
+                                        return <PassportTagsCellEditor
                                             value={value}
                                             tags={!tags.isLoading ? tags.tags : []}
                                             passport={record}
@@ -272,7 +273,7 @@ export default function PassportsTable(props) {
                                 key="kind"
                                 render={(value, record) => {
                                     return <Tag>{
-                                        value === "KERN" ? "Ядерный проект" : value === "MONO" ? "Монопроект" : ""
+                                        value === "KERN" ? "Ядерный проект" : value === "MONO" ? "Монопроект" : "Межпрограммный"
                                     }</Tag>
                                 }}
                                 filters={[{text: "Монопроект", value: "MONO"}, {
@@ -322,7 +323,7 @@ export default function PassportsTable(props) {
                                 key="request_goal"
                                 render={(value, record) => {
                                     return <Paragraph
-                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
                                     >
                                         {parse(value)}
                                     </Paragraph>
@@ -338,7 +339,7 @@ export default function PassportsTable(props) {
                                 key="request_result"
                                 render={(value, record) => {
                                     return <Paragraph
-                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
                                     >
                                         {parse(value)}
                                     </Paragraph>
@@ -354,7 +355,7 @@ export default function PassportsTable(props) {
                                 key="request_description"
                                 render={(value, record) => {
                                     return <Paragraph
-                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
                                     >
                                         {parse(value)}
                                     </Paragraph>
@@ -370,7 +371,7 @@ export default function PassportsTable(props) {
                                 key="request_criteria"
                                 render={(value, record) => {
                                     return <Paragraph
-                                        ellipsis={{rows: 10, expandable: true, symbol: 'more'}}
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
                                     >
                                         {parse(value)}
                                     </Paragraph>
@@ -404,6 +405,37 @@ export default function PassportsTable(props) {
                                 key="available_seats_number"
                                 sorter={(a, b) => a.available_seats_number - b.available_seats_number}
                             />
+
+                        if (column.key === "is_visible")
+                            return (
+                                <Column
+                                    title="Виден студентам"
+                                    width={100}
+                                    dataIndex="is_visible"
+                                    key="is_visible"
+                                    render={(value, record) => {
+                                        return (
+                                            <PassportIsVisibleEditor
+                                                value={value}
+                                                passport={record}
+                                                passports={props.defaultPassports.passports}
+                                                sorter={(a, b) => a.is_visible - b.is_visible}
+                                            />
+                                        )
+                                    }}
+                                    filters={[
+                                        {
+                                            text: "Доступен",
+                                            value: true
+                                        },
+                                        {
+                                            text: "Не доступен",
+                                            value: false
+                                        }
+                                    ]}
+                                    onFilter={(value, record) => record.is_visible === value}
+                                />
+                            )
                     })
                 }
                 {/*<Column*/}

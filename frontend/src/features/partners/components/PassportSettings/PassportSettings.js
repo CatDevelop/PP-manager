@@ -71,23 +71,23 @@ export default function PassportSettings(props) {
     }, [passport])
 
     const savePassport = () => {
-        if (!isLoading) {
-            setIsLoading(true);
-            message.loading({content: "Сохраняю паспорт...", key: 'updatePassport', duration: 0})
-
-            dispatch(updatePassportTag({
-                id: props.editPassportId,
-                tags: passportTags
-            })).then((response) => {
-                setIsLoading(false)
-                message.destroy('updatePassport')
-                message.success({content: "Вы успешно обновили паспорт"})
-            }, (error) => {
-                setIsLoading(false)
-                message.destroy('updatePassport')
-                message.error({content: error.message})
-            });
-        }
+        // if (!isLoading) {
+        //     setIsLoading(true);
+        //     message.loading({content: "Сохраняю паспорт...", key: 'updatePassport', duration: 0})
+        //
+        //     dispatch(updatePassportTag({
+        //         id: props.editPassportId,
+        //         tags: passportTags
+        //     })).then((response) => {
+        //         setIsLoading(false)
+        //         message.destroy('updatePassport')
+        //         message.success({content: "Вы успешно обновили паспорт"})
+        //     }, (error) => {
+        //         setIsLoading(false)
+        //         message.destroy('updatePassport')
+        //         message.error({content: error.message})
+        //     });
+        // }
     }
 
     if(tags.isLoading || passport.isLoading)

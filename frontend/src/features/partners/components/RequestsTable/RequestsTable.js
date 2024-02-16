@@ -1,12 +1,16 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {App, Button, Input, Space, Table, Tag} from "antd";
+import {App, Button, Input, Space, Table, Typography} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./RequestsTable.module.css"
 import {SearchOutlined} from "@ant-design/icons";
+import {useTags} from "../../../../hooks/use-tags";
+import RequestTagsCellEditor from "../RequestTagsCellEditor/RequestTagsCellEditor";
+import {getAllTags} from "../../../../store/slices/tagsSlice";
+import parse from "html-react-parser";
 
 const {Column, ColumnGroup} = Table;
-const {TextArea} = Input;
+const {Paragraph} = Typography;
 
 export default function RequestsTable(props) {
     const navigate = useNavigate()
@@ -16,6 +20,12 @@ export default function RequestsTable(props) {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
+
+    const tags = useTags()
+
+    useEffect(() => {
+        dispatch(getAllTags())
+    }, []);
 
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -146,6 +156,93 @@ export default function RequestsTable(props) {
                                 {...getColumnSearchProps("status")}
                             />
 
+                        if (column.key === "tags")
+                            return (
+                                <Column
+                                    title="Теги"
+                                    width={200}
+                                    dataIndex="tags"
+                                    key="tags"
+                                    render={(value, record) => {
+                                        return <RequestTagsCellEditor
+                                            value={value}
+                                            tags={!tags.isLoading ? tags.tags : []}
+                                            request={record}
+                                            requests={props.defaultRequests.requests}
+                                        />
+                                    }}
+                                    filters={!tags.isLoading ? tags.tags.map(tag => ({
+                                        text: tag.text,
+                                        value: tag.id
+                                    })) : []}
+                                    onFilter={(value, record) => record.tags.find(t => t.id === value)}
+                                />
+                            )
+
+
+                        if (column.key === "goal")
+                            return <Column
+                                title="Цель"
+                                width={200}
+                                dataIndex="goal"
+                                key="goal"
+                                render={(value, record) => {
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
+                                }}
+                                {...getColumnSearchProps("goal")}
+                            />
+
+                        if (column.key === "result")
+                            return <Column
+                                title="Результат"
+                                width={200}
+                                dataIndex="result"
+                                key="result"
+                                render={(value, record) => {
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
+                                }}
+                                {...getColumnSearchProps("result")}
+                            />
+
+                        if (column.key === "description")
+                            return <Column
+                                title="Описание"
+                                width={500}
+                                dataIndex="description"
+                                key="description"
+                                render={(value, record) => {
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
+                                }}
+                                {...getColumnSearchProps("description")}
+                            />
+
+                        if (column.key === "criteria")
+                            return <Column
+                                title="Критерии оценивания"
+                                width={300}
+                                dataIndex="criteria"
+                                key="criteria"
+                                render={(value, record) => {
+                                    return <Paragraph
+                                        ellipsis={{rows: 10, expandable: true, symbol: 'Подробнее'}}
+                                    >
+                                        {parse(value)}
+                                    </Paragraph>
+                                }}
+                                {...getColumnSearchProps("criteria")}
+                            />
 
                         if (column.key === "customer_company_name")
                             return <Column
