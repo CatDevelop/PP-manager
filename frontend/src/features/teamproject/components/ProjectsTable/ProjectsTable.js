@@ -117,33 +117,33 @@ export default function ProjectsTable(props) {
                     }}
                     {...getColumnSearchProps("name")}
                 />
-                <Column
-                    title="Участники"
-                    width={200}
-                    dataIndex="students"
-                    key="students"
-                    render={(value, record) => {
-                        return <Avatar.Group className={styles.students}>
-                            {
-                                JSON.parse(value || "[]").map(student => {
-                                    return <Tooltip title={student.fullname} placement="top">
-                                        <Avatar
-                                            onClick={() => navigate(`/teamproject/users/${student.id}`)}
-                                            style={{
-                                                backgroundColor: "rgba(174, 126, 222, 0.6)",
-                                                cursor: "pointer"
-                                            }}
-                                        >
-                                            {student.fullname.split(" ")[0][0]}{student.fullname.split(" ")[1][0]}
-                                        </Avatar>
-                                    </Tooltip>
-                                })
-                            }
+                {/*<Column*/}
+                {/*    title="Участники"*/}
+                {/*    width={200}*/}
+                {/*    dataIndex="students"*/}
+                {/*    key="students"*/}
+                {/*    render={(value, record) => {*/}
+                {/*        return <Avatar.Group className={styles.students}>*/}
+                {/*            {*/}
+                {/*                JSON.parse(value || "[]").map(student => {*/}
+                {/*                    return <Tooltip title={student.fullname} placement="top">*/}
+                {/*                        <Avatar*/}
+                {/*                            onClick={() => navigate(`/teamproject/users/${student.id}`)}*/}
+                {/*                            style={{*/}
+                {/*                                backgroundColor: "rgba(174, 126, 222, 0.6)",*/}
+                {/*                                cursor: "pointer"*/}
+                {/*                            }}*/}
+                {/*                        >*/}
+                {/*                            {student.fullname.split(" ")[0][0]}{student.fullname.split(" ")[1][0]}*/}
+                {/*                        </Avatar>*/}
+                {/*                    </Tooltip>*/}
+                {/*                })*/}
+                {/*            }*/}
 
-                        </Avatar.Group>
-                    }}
-                    {...getColumnSearchProps("students")}
-                />
+                {/*        </Avatar.Group>*/}
+                {/*    }}*/}
+                {/*    {...getColumnSearchProps("students")}*/}
+                {/*/>*/}
                 <Column title="Куратор" width={200} dataIndex="curator" key="curator"
                         {...getColumnSearchProps("curator")}
                 />

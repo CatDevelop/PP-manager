@@ -4,6 +4,8 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Project} from "../project/entities/project.entity";
 import {Repository} from "typeorm";
 import {ProjectService} from "../project/project.service";
+import {CustomerCompanyMappers} from "../customer-company/mappers/customer-company.mappers";
+import {StudentService} from "../student/student.service";
 
 const XLSX = require('xlsx');
 const JS_XLSX = require('js-xlsx');
@@ -14,7 +16,8 @@ export class TeamprojectService {
     constructor(
         @InjectRepository(Project)
         private readonly projectRepository: Repository<Project>,
-        private readonly projectService: ProjectService
+        private readonly projectService: ProjectService,
+        private readonly studentService: StudentService
     ) {
     }
 
@@ -69,30 +72,68 @@ export class TeamprojectService {
                 .then(result => team = result)
                 .catch(error => console.log('error', error));
 
+            let students = []
+            // @ts-ignore
+            for (const thematicGroup of team.thematicGroups) {
+                for (const student of thematicGroup.students) {
+                    if (!await this.studentService.isCreate(student.userId)) {
+                        console.log("Create student")
+                        await this.studentService.create(
+                            {
+                                id: student.userId,
+                                fullname: student.fullname,
+                                phone: student.contacts.phone,
+                                email: student.contacts.email,
+                                groupName: student.groupName,
+                            }
+                        )
+                    } else {
+                        console.log("Update student")
+                        await this.studentService.update(
+                            student.userId,
+                            {
+                                id: student.userId,
+                                fullname: student.fullname,
+                                phone: student.contacts.phone,
+                                email: student.contacts.email,
+                                groupName: student.groupName,
+                            }
+                        )
+                    }
+
+                    students.push(student.userId)
+                }
+            }
+
 
             const projectBD = await this.projectRepository.findOneBy({id: project.id})
 
             console.log(i)
             if (!projectBD) {
+                console.log("Create new project")
                 newProjectsCount += 1;
                 await this.projectService.create({
                     project,
                     details,
                     team,
                     documents,
-                    results
+                    results,
+                    students
                 })
             } else {
+                console.log("Update project")
                 updatedProjectsCount += 1;
                 await this.projectService.update(project.id, {
                     project,
                     details,
                     team,
                     documents,
-                    results
+                    results,
+                    students
                 })
             }
         }
+        console.log("End of parse projects")
         return {
             newProjectsCount,
             updatedProjectsCount
@@ -159,9 +200,12 @@ export class TeamprojectService {
             projectsSheet["D" + (index + 2)] = {t: 's', v: project.curator}
             projectsSheet["E" + (index + 2)] = {t: 's', v: project.isHaveReport ? "Да" : "Нет"}
             projectsSheet["F" + (index + 2)] = {t: 's', v: project.isHavePresentation ? "Да" : "Нет"}
-            projectsSheet["G" + (index + 2)] = {t: project.comissionScore ? 'n' : 's', v: project.comissionScore || "Нет оценки"}
+            projectsSheet["G" + (index + 2)] = {
+                t: project.comissionScore ? 'n' : 's',
+                v: project.comissionScore || "Нет оценки"
+            }
             projectsSheet["H" + (index + 2)] = {t: 's', v: project.status}
-            projectsSheet["I" + (index + 2)] = {t: 's', v: "https://teamproject.urfu.ru/#/"+project.id+"/about"}
+            projectsSheet["I" + (index + 2)] = {t: 's', v: "https://teamproject.urfu.ru/#/" + project.id + "/about"}
         })
 
         let students = []
@@ -169,7 +213,7 @@ export class TeamprojectService {
         projects.forEach(project => {
             JSON.parse(project.team).thematicGroups.forEach((group, groupIndex) => {
                 group.students.forEach((student, studentIndex) => {
-                    if(!students.find(s => s.key === student.userId))
+                    if (!students.find(s => s.key === student.userId))
                         students.push(
                             {
                                 key: student.userId,
@@ -229,10 +273,19 @@ export class TeamprojectService {
             usersSheet["B" + (index + 2)] = {t: 's', v: student.group}
             usersSheet["C" + (index + 2)] = {t: 's', v: student.projectName}
             usersSheet["D" + (index + 2)] = {t: 's', v: student.curator}
-            usersSheet["E" + (index + 2)] = {t: student.expertsScore === "Нет оценки" ? 's' : 'n', v: student.expertsScore}
+            usersSheet["E" + (index + 2)] = {
+                t: student.expertsScore === "Нет оценки" ? 's' : 'n',
+                v: student.expertsScore
+            }
             usersSheet["F" + (index + 2)] = {t: student.finalScore === "Нет оценки" ? 's' : 'n', v: student.finalScore}
-            usersSheet["G" + (index + 2)] = {t: student.retakedScore === "Не пересдавал" ? 's' : 'n', v: student.retakedScore}
-            usersSheet["H" + (index + 2)] = {t: 's', v: "https://teamproject.urfu.ru/#/"+student.projectKey+"/about"}
+            usersSheet["G" + (index + 2)] = {
+                t: student.retakedScore === "Не пересдавал" ? 's' : 'n',
+                v: student.retakedScore
+            }
+            usersSheet["H" + (index + 2)] = {
+                t: 's',
+                v: "https://teamproject.urfu.ru/#/" + student.projectKey + "/about"
+            }
         })
 
         XLSX.utils.book_append_sheet(workbook, projectsSheet, 'Проекты');

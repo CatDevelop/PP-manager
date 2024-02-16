@@ -18,6 +18,7 @@ import { CustomerCompanyModule } from './customer-company/customer-company.modul
 import { CustomerUserModule } from './customer-user/customer-user.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { TagModule } from './tag/tag.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
     imports: [
@@ -51,7 +52,8 @@ import { TagModule } from './tag/tag.module';
         CustomerCompanyModule,
         CustomerUserModule,
         AnalyticModule,
-        TagModule
+        TagModule,
+        StudentModule
     ],
     controllers: [AppController],
     providers: [AppService],

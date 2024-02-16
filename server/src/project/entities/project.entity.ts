@@ -1,4 +1,6 @@
-import {Column, Entity, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {Column, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {Tag} from "../../tag/entities/tag.entity";
+import {Student} from "../../student/entities/student.entity";
 
 @Entity()
 export class Project {
@@ -11,8 +13,8 @@ export class Project {
     @Column()
     name: string;
 
-    @Column({nullable: true})
-    students: string;
+    // @Column({nullable: true})
+    // students: string;
 
     @Column({nullable: true})
     curator: string
@@ -49,4 +51,18 @@ export class Project {
 
     @Column({nullable: true})
     team: string;
+
+    @ManyToMany(() => Student, (student) => student.projects, {
+        cascade: true
+    })
+    @JoinTable({
+        name: "project_student", joinColumn: {
+            name: 'project_id',
+            referencedColumnName: 'id',
+        }, inverseJoinColumn: {
+            name: 'student_id',
+            referencedColumnName: 'id',
+        },
+    })
+    students: Student[];
 }

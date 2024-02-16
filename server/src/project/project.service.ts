@@ -5,12 +5,15 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Project} from "./entities/project.entity";
 import {Repository} from "typeorm";
 import {FindAllProjectsDto} from "./dto/find-all-projects.dto";
+import {Student} from "../student/entities/student.entity";
 
 @Injectable()
 export class ProjectService {
     constructor(
         @InjectRepository(Project)
         private readonly projectRepository: Repository<Project>,
+        @InjectRepository(Student)
+        private readonly studentRepository: Repository<Student>,
     ) {
     }
 
@@ -20,24 +23,24 @@ export class ProjectService {
         if (isProjectExist)
             throw new BadRequestException("The project already exist!");
 
-        let students = []
-        createProjectDto.team.thematicGroups.forEach((group, groupIndex) => {
-            group.students.forEach((student, studentIndex) => {
-                if (!students.find(s => s.key === student.userId))
-                    students.push(
-                        {
-                            key: student.userId,
-                            fullname: student.fullname
-                        }
-                    )
-            })
-        })
+        // let students = []
+        // createProjectDto.team.thematicGroups.forEach((group, groupIndex) => {
+        //     group.students.forEach((student, studentIndex) => {
+        //         if (!students.find(s => s.key === student.userId))
+        //             students.push(
+        //                 {
+        //                     key: student.userId,
+        //                     fullname: student.fullname
+        //                 }
+        //             )
+        //     })
+        // })
 
         const newProject = {
             id: createProjectDto.project.id,
             passport: createProjectDto.project.passportNumber,
             name: createProjectDto.project.title,
-            students: JSON.stringify(students),
+            students: createProjectDto.students.map(student => ({id: student})),
             curator: createProjectDto.project.mainCurator.fullname,
             // @ts-ignore
             year: createProjectDto.details.period.year,
@@ -78,6 +81,9 @@ export class ProjectService {
                 comissionScore: true,
                 status: true,
                 updated_at: true
+            },
+            relations: {
+                students: true
             }
         })
 
@@ -102,23 +108,25 @@ export class ProjectService {
         if (!project)
             throw new NotFoundException("Project not found!")
 
-        let students = []
-        updateProjectDto.team.thematicGroups.forEach((group, groupIndex) => {
-            group.students.forEach((student, studentIndex) => {
-                if (!students.find(s => s.key === student.userId))
-                    students.push(
-                        {
-                            key: student.userId,
-                            fullname: student.fullname
-                        }
-                    )
+        if ("students" in updateProjectDto) {
+            const studentsExists = await this.studentRepository.countBy(
+                updateProjectDto.students.map(student => ({id: student}))
+            )
+
+            if (updateProjectDto.students.length !== 0 && studentsExists !== updateProjectDto.students.length)
+                throw new BadRequestException("The student does not exist!");
+
+            await this.projectRepository.save({
+                ...project,
+                students: updateProjectDto.students.map(student => ({id: student}))
             })
-        })
+            delete updateProjectDto["students"];
+        }
 
         await this.projectRepository.update(project.id, {
             passport: updateProjectDto.project.passportNumber,
             name: updateProjectDto.project.title,
-            students: JSON.stringify(students),
+            // students: JSON.stringify(students),
             curator: updateProjectDto.project.mainCurator.fullname,
             // @ts-ignore
             year: updateProjectDto.details.period.year,

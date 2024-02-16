@@ -77,11 +77,11 @@ export class RequestService {
             delete updateRequestDto["period_id"];
         }
 
-        if ("customer_user" in updateRequestDto) {
+        if ("customer_user_id" in updateRequestDto) {
             await this.requestRepository.update(request.id, {
                 customer_user: {id: updateRequestDto.customer_user_id},
             });
-            delete updateRequestDto["customer_user"];
+            delete updateRequestDto["customer_user_id"];
         }
 
         if (Object.keys(updateRequestDto).length > 0)

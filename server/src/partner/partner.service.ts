@@ -169,8 +169,6 @@ export class PartnerService {
                         id: currentPassport.source.id
                     })
 
-                    console.log(currentPassport)
-
                     if (!await this.customerCompanyService.isCreate(currentRequest.partner.id)) {
                         // Компании заказчика не существует
                         console.log("Create customer company")
