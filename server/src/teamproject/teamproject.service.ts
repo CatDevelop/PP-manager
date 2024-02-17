@@ -76,32 +76,38 @@ export class TeamprojectService {
             // @ts-ignore
             for (const thematicGroup of team.thematicGroups) {
                 for (const student of thematicGroup.students) {
-                    if (!await this.studentService.isCreate(student.userId)) {
-                        console.log("Create student")
-                        await this.studentService.create(
-                            {
-                                id: student.userId,
-                                fullname: student.fullname,
-                                phone: student.contacts.phone,
-                                email: student.contacts.email,
-                                groupName: student.groupName,
-                            }
-                        )
+                    if(student) {
+                        if (!await this.studentService.isCreate(student.userId)) {
+                            console.log("Create student")
+                            await this.studentService.create(
+                                {
+                                    id: student.userId,
+                                    fullname: student.fullname,
+                                    phone: student.contacts.phone,
+                                    email: student.contacts.email,
+                                    groupName: student.groupName,
+                                }
+                            )
+                        } else {
+                            console.log("Update student")
+                            await this.studentService.update(
+                                student.userId,
+                                {
+                                    id: student.userId,
+                                    fullname: student.fullname,
+                                    phone: student.contacts.phone,
+                                    email: student.contacts.email,
+                                    groupName: student.groupName,
+                                }
+                            )
+                        }
+
+                        students.push(student.userId)
                     } else {
-                        console.log("Update student")
-                        await this.studentService.update(
-                            student.userId,
-                            {
-                                id: student.userId,
-                                fullname: student.fullname,
-                                phone: student.contacts.phone,
-                                email: student.contacts.email,
-                                groupName: student.groupName,
-                            }
+                        console.log(
+                            details, results, team
                         )
                     }
-
-                    students.push(student.userId)
                 }
             }
 

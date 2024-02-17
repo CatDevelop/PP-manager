@@ -6,6 +6,8 @@ import {Repository} from "typeorm";
 import {Student} from "./entities/student.entity";
 import {CreatePassportDto} from "../passport/dto/create-passport.dto";
 import {UpdatePassportDto} from "../passport/dto/update-passport.dto";
+import {FindOnePassportDto} from "../passport/dto/find-one-passport.dto";
+import {FindOneStudentDto} from "./dto/find-one-student.dto";
 
 @Injectable()
 export class StudentService {
@@ -41,8 +43,18 @@ export class StudentService {
         return `This action returns all student`;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} student`;
+    async findOne(findOneStudentDto: FindOneStudentDto) {
+        if (!await this.isCreate(findOneStudentDto.id))
+            throw new NotFoundException("Student not found!")
+
+        const student = await this.studentRepository.findOne({
+            where: {id: findOneStudentDto.id},
+            relations: {
+                projects: true
+            },
+        })
+
+        return student
     }
 
     async update(id: number, updateStudentDto: UpdateStudentDto) {

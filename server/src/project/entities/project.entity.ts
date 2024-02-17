@@ -1,4 +1,4 @@
-import {Column, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryColumn, UpdateDateColumn} from "typeorm";
 import {Tag} from "../../tag/entities/tag.entity";
 import {Student} from "../../student/entities/student.entity";
 
@@ -37,9 +37,6 @@ export class Project {
     @Column()
     status: string;
 
-    @UpdateDateColumn()
-    updated_at: Date;
-
     @Column({nullable: true})
     results: string;
 
@@ -65,4 +62,10 @@ export class Project {
         },
     })
     students: Student[];
+
+    @CreateDateColumn({nullable: true})
+    created_at: Date;
+
+    @UpdateDateColumn({nullable: true})
+    updated_at: Date;
 }

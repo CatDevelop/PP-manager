@@ -41,7 +41,7 @@ export class ProjectService {
             passport: createProjectDto.project.passportNumber,
             name: createProjectDto.project.title,
             students: createProjectDto.students.map(student => ({id: student})),
-            curator: createProjectDto.project.mainCurator.fullname,
+            curator: createProjectDto.project.mainCurator?.fullname || "",
             // @ts-ignore
             year: createProjectDto.details.period.year,
             // @ts-ignore
