@@ -276,7 +276,7 @@ export default function RequestsTable(props) {
                             return (
                                 <Column
                                     title="Количество студентов"
-                                    width={100}
+                                    width={140}
                                     dataIndex="students_count"
                                     key="students_count"
                                     render={(value, record) => {
@@ -286,6 +286,7 @@ export default function RequestsTable(props) {
                                             requests={props.defaultRequests.requests}
                                         />
                                     }}
+                                    sorter={(a, b) => a.students_count - b.students_count}
                                 />
                             )
                     })
