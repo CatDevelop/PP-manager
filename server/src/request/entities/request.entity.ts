@@ -36,6 +36,9 @@ export class Request {
     @Column({nullable: true})
     status: string;
 
+    @Column({default: 0})
+    students_count: number;
+
     @ManyToOne(() => Period, (period) => period.requests, {nullable: true})
     @JoinColumn({ name: 'period'})
     period_id: Period

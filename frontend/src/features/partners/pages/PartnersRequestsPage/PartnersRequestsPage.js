@@ -50,6 +50,10 @@ export const initialRequestsTableColumns = [
         name: 'Теги',
     },
     {
+        key: 'students_count',
+        name: 'Количество студентов',
+    },
+    {
         key: 'customer_company_name',
         name: 'Заказчик',
     },
@@ -118,7 +122,8 @@ export function PartnersRequestsPage() {
             customer_first_name: request.customer_user.first_name,
             customer_last_name: request.customer_user.last_name,
             customer_middle_name: request.customer_user.middle_name,
-            customer_company_name: request.customer_user.customer_company.name
+            customer_company_name: request.customer_user.customer_company.name,
+            students_count: request.students_count
         })))
     }, [requests.requests])
 

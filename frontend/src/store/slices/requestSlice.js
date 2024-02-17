@@ -2,8 +2,8 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import API from "../../api/API";
 
 
-export const updateRequestTag = createAsyncThunk(
-    'request/tag/update',
+export const updateRequest = createAsyncThunk(
+    'request/update',
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
@@ -14,7 +14,7 @@ export const updateRequestTag = createAsyncThunk(
                         "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken"),
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({tags: data.tags})
+                    body: JSON.stringify(data)
                 }
             );
 
@@ -51,7 +51,7 @@ const requestSlice = createSlice({
             }
         },
         extraReducers: builder => builder
-            .addCase(updateRequestTag.rejected, (state, action) => {
+            .addCase(updateRequest.rejected, (state, action) => {
                 throw new Error(action.payload);
             })
     })

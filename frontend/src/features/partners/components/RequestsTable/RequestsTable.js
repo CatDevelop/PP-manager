@@ -8,6 +8,7 @@ import {useTags} from "../../../../hooks/use-tags";
 import RequestTagsCellEditor from "../RequestTagsCellEditor/RequestTagsCellEditor";
 import {getAllTags} from "../../../../store/slices/tagsSlice";
 import parse from "html-react-parser";
+import RequestStudentsCountCellEditor from "../RequestStudentsCountCellEditor/RequestStudentsCountCellEditor";
 
 const {Column, ColumnGroup} = Table;
 const {Paragraph} = Typography;
@@ -270,6 +271,23 @@ export default function RequestsTable(props) {
                                 key="max_copies"
                                 sorter={(a, b) => a.max_copies - b.max_copies}
                             />
+
+                        if (column.key === "students_count")
+                            return (
+                                <Column
+                                    title="Количество студентов"
+                                    width={100}
+                                    dataIndex="students_count"
+                                    key="students_count"
+                                    render={(value, record) => {
+                                        return <RequestStudentsCountCellEditor
+                                            value={value}
+                                            request={record}
+                                            requests={props.defaultRequests.requests}
+                                        />
+                                    }}
+                                />
+                            )
                     })
                 }
             </Table>

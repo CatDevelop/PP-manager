@@ -2,10 +2,9 @@ import React, {useEffect, useState} from 'react';
 import {App, Button, Input, Select, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./PassportTagsCellEditor.module.css"
-import {updatePassportTag} from "../../../../store/slices/passportSlice";
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
 import {setPassports} from "../../../../store/slices/passportsSlice";
-import {updateRequestTag} from "../../../../store/slices/requestSlice";
+import {updateRequest} from "../../../../store/slices/requestSlice";
 
 const {TextArea} = Input;
 const {Column, ColumnGroup} = Table;
@@ -54,7 +53,7 @@ export default function PassportTagsCellEditor(props) {
             setIsLoading(true);
             message.loading({content: "Сохраняю паспорт...", key: 'updatePassport', duration: 0})
 
-            dispatch(updateRequestTag({
+            dispatch(updateRequest({
                 id: props.passport.request_id,
                 tags: passportTags
             })).then((response) => {

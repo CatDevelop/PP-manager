@@ -3,8 +3,7 @@ import {App, Button, Input, Select, Table, Tag} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./RequestTagsCellEditor.module.css"
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
-import {setPassports} from "../../../../store/slices/passportsSlice";
-import {updateRequestTag} from "../../../../store/slices/requestSlice";
+import {updateRequest} from "../../../../store/slices/requestSlice";
 import {setRequests} from "../../../../store/slices/requestsSlice";
 
 const {TextArea} = Input;
@@ -54,7 +53,7 @@ export default function RequestTagsCellEditor(props) {
             setIsLoading(true);
             message.loading({content: "Сохраняю заявку...", key: 'updateRequest', duration: 0})
 
-            dispatch(updateRequestTag({
+            dispatch(updateRequest({
                 id: props.request.id,
                 tags: requestTags
             })).then((response) => {
