@@ -16,7 +16,7 @@ export namespace PassportMappers {
             team_count: passport.mainProgram.max_copies,
             students_count: passport.mainProgram.students,
             course: passport.mainProgram.course,
-            request_id: passport.source.id,
+            request_id: passport.source?.id || passport.id,
             kind: passport.kind,
             status: passport.statuses[0].text,
         };
@@ -35,7 +35,7 @@ export namespace PassportMappers {
             team_count: passport.mainProgram.max_copies,
             students_count: passport.mainProgram.students,
             course: passport.mainProgram.course,
-            request_id: passport.source.id,
+            request_id: passport.source?.id || passport.id,
             kind: passport.kind,
             status: passport.statuses[0].text
         };

@@ -7,7 +7,7 @@ export const getAllProjects = createAsyncThunk(
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
-                `${API.GET_PROJECTS}/${data.year}/${data.term}`,
+                `${API.GET_PROJECTS}/${data.period_id}`,
                 {
                     method: 'get',
                     headers: {

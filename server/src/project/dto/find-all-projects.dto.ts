@@ -1,4 +1,3 @@
 export class FindAllProjectsDto {
-    year: number;
-    term: number;
+    period_id: number
 }

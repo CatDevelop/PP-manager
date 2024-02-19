@@ -1,4 +1,4 @@
-import {IsString} from "class-validator";
+import {IsNumber, IsString} from "class-validator";
 
 export class ParseRequestsDto {
     @IsString()
@@ -6,4 +6,7 @@ export class ParseRequestsDto {
 
     @IsString()
     session_cookie: string
+
+    @IsNumber()
+    period_id: number;
 }

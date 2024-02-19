@@ -7,6 +7,5 @@ export class ParsePassportDto {
     @IsString()
     session_cookie: string
 
-    @IsNumber()
-    id: number;
+    id?: number;
 }

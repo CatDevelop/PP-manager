@@ -13,11 +13,13 @@ import {CustomerUserService} from "../customer-user/customer-user.service";
 import {Course} from "../course/entities/course.entity";
 import {CourseService} from "../course/course.service";
 import {Tag} from "../tag/entities/tag.entity";
+import {PeriodService} from "../period/period.service";
+import {Period} from "../period/entities/period.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag])],
+    imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag, Period])],
     controllers: [PartnerController],
-    providers: [PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService],
+    providers: [PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService, PeriodService],
 })
 export class PartnerModule {
 }

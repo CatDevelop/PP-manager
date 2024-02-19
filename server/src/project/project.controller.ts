@@ -21,11 +21,11 @@ export class ProjectController {
     constructor(private readonly projectService: ProjectService) {
     }
 
-    @Get(':year/:term')
+    @Get('all/:period_id')
     @UseGuards(JwtAuthGuard)
     @UsePipes(new ValidationPipe())
-    findAll(@Param('year', ParseIntPipe) year: number, @Param('term', ParseIntPipe) term: number) {
-        return this.projectService.findAll({year, term});
+    findAll(@Param('period_id', ParseIntPipe) period_id: number) {
+        return this.projectService.findAll({period_id});
     }
 
     @Get(':id')

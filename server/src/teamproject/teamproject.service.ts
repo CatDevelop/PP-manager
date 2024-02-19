@@ -1,23 +1,26 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {ParseTeamprojectDto} from './dto/parse-teamproject.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Project} from "../project/entities/project.entity";
 import {Repository} from "typeorm";
 import {ProjectService} from "../project/project.service";
-import {CustomerCompanyMappers} from "../customer-company/mappers/customer-company.mappers";
 import {StudentService} from "../student/student.service";
+import {PeriodService} from "../period/period.service";
+import {ParseProjectDto} from "./dto/parse-project.dto";
 
 const XLSX = require('xlsx');
 const JS_XLSX = require('js-xlsx');
 
 @Injectable()
 export class TeamprojectService {
+    private readonly logger = new Logger(TeamprojectService.name);
 
     constructor(
         @InjectRepository(Project)
         private readonly projectRepository: Repository<Project>,
         private readonly projectService: ProjectService,
-        private readonly studentService: StudentService
+        private readonly studentService: StudentService,
+        private readonly periodService: PeriodService
     ) {
     }
 
@@ -33,8 +36,10 @@ export class TeamprojectService {
 
         let projects = []
 
+        let period = await this.periodService.findOne(parseProjectsDto.period_id)
+
         let localProjects = await fetch(
-            "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + parseProjectsDto.year + "&semester=" + parseProjectsDto.term + "&size=10000&page=1", requestOptions)
+            "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + period.year + "&semester=" + period.term + "&size=10000&page=1", requestOptions)
             .then(response => response.json())
             .then(result => result)
             .catch(error => {
@@ -42,114 +47,137 @@ export class TeamprojectService {
             })
         projects.push(...localProjects.items)
 
+        this.logger.log("Start parse projects from Teamproject {")
+        this.logger.log("\tPeriod: " + period.year + " " + period.term + "(id: " + period.id + ")")
+        this.logger.log("\tProjects count: " + projects.length)
+        this.logger.log("}")
+
         let i = 0
-        let newProjectsCount = 0;
-        let updatedProjectsCount = 0;
         for (const project of projects) {
-            let details = {}
-            let results = {}
-            let documents = {}
-            let team = {}
+            this.logger.log(i + "/" + projects.length)
             i += 1;
+            await this.parseProject({token: parseProjectsDto.token, id: project.id, project})
+        }
+        this.logger.log("End of parse projects")
+        return;
+    }
 
-            await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/documents/results", requestOptions)
-                .then(response => response.json())
-                .then(result => documents = result)
-                .catch(error => console.log('error', error));
 
-            await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/details", requestOptions)
-                .then(response => response.json())
-                .then(result => details = result)
-                .catch(error => console.log('error', error));
+    async parseProject(parseProjectDto: ParseProjectDto) {
+        let myHeaders = new Headers();
+        myHeaders.append("Authorization", "Bearer " + parseProjectDto.token);
 
-            await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/result", requestOptions)
-                .then(response => response.json())
-                .then(result => results = result)
-                .catch(error => console.log('error', error));
+        let requestOptions: RequestInit = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
 
-            await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + project.id + "/team", requestOptions)
-                .then(response => response.json())
-                .then(result => team = result)
-                .catch(error => console.log('error', error));
+        this.logger.log("Parse project " + parseProjectDto.id + " {")
+        let details = {}
+        let results = {}
+        let documents = {}
+        let team = {}
 
-            let students = []
-            // @ts-ignore
-            for (const thematicGroup of team.thematicGroups) {
-                for (const student of thematicGroup.students) {
-                    if(student) {
-                        if (!await this.studentService.isCreate(student.userId)) {
-                            console.log("Create student")
-                            await this.studentService.create(
-                                {
-                                    id: student.userId,
-                                    fullname: student.fullname,
-                                    phone: student.contacts.phone,
-                                    email: student.contacts.email,
-                                    groupName: student.groupName,
-                                }
-                            )
-                        } else {
-                            console.log("Update student")
-                            await this.studentService.update(
-                                student.userId,
-                                {
-                                    id: student.userId,
-                                    fullname: student.fullname,
-                                    phone: student.contacts.phone,
-                                    email: student.contacts.email,
-                                    groupName: student.groupName,
-                                }
-                            )
-                        }
 
-                        students.push(student.userId)
+        await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + parseProjectDto.id + "/documents/results", requestOptions)
+            .then(response => response.json())
+            .then(result => documents = result)
+            .catch(error => console.log('error', error));
+
+        await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + parseProjectDto.id + "/details", requestOptions)
+            .then(response => response.json())
+            .then(result => details = result)
+            .catch(error => console.log('error', error));
+
+        await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + parseProjectDto.id + "/result", requestOptions)
+            .then(response => response.json())
+            .then(result => results = result)
+            .catch(error => console.log('error', error));
+
+        await fetch("https://teamproject.urfu.ru/api/v2/workspaces/" + parseProjectDto.id + "/team", requestOptions)
+            .then(response => response.json())
+            .then(result => team = result)
+            .catch(error => console.log('error', error));
+
+        let students = []
+        // @ts-ignore
+        for (const thematicGroup of team.thematicGroups) {
+            for (const student of thematicGroup.students) {
+                if (student) {
+                    if (!await this.studentService.isCreate(student.userId)) {
+                        this.logger.log("\tCreate student: (id:" + student.userId + ")")
+                        await this.studentService.create(
+                            {
+                                id: student.userId,
+                                fullname: student.fullname,
+                                phone: student.contacts.phone,
+                                email: student.contacts.email,
+                                groupName: student.groupName,
+                            }
+                        )
                     } else {
-                        console.log(
-                            details, results, team
+                        this.logger.log("\tUpdate student: (id:" + student.userId + ")")
+                        await this.studentService.update(
+                            student.userId,
+                            {
+                                id: student.userId,
+                                fullname: student.fullname,
+                                phone: student.contacts.phone,
+                                email: student.contacts.email,
+                                groupName: student.groupName,
+                            }
                         )
                     }
+
+                    students.push(student.userId)
+                } else {
+                    this.logger.error("Student not found")
                 }
             }
-
-
-            const projectBD = await this.projectRepository.findOneBy({id: project.id})
-
-            console.log(i)
-            if (!projectBD) {
-                console.log("Create new project")
-                newProjectsCount += 1;
-                await this.projectService.create({
-                    project,
-                    details,
-                    team,
-                    documents,
-                    results,
-                    students
-                })
-            } else {
-                console.log("Update project")
-                updatedProjectsCount += 1;
-                await this.projectService.update(project.id, {
-                    project,
-                    details,
-                    team,
-                    documents,
-                    results,
-                    students
-                })
-            }
         }
-        console.log("End of parse projects")
-        return {
-            newProjectsCount,
-            updatedProjectsCount
+
+
+        const projectBD = await this.projectRepository.findOneBy({id: parseProjectDto.id})
+
+        // @ts-ignore
+        let period = await this.periodService.getId(details.period.year, details.period.term)
+
+        if (!projectBD) {
+            this.logger.log("\tCreate project: " + parseProjectDto.id)
+
+            await this.projectService.create({
+                // @ts-ignore
+                passport: details.passportNumber,
+                project: parseProjectDto.project,
+                period_id: period.id,
+                details,
+                team,
+                documents,
+                results,
+                students
+            })
+        } else {
+            this.logger.log("\tUpdate project: " + parseProjectDto.id)
+            await this.projectService.update(parseProjectDto.id, {
+                // @ts-ignore
+                passport: details.passportNumber,
+                project: parseProjectDto.project,
+                period_id: period.id,
+                details,
+                team,
+                documents,
+                results,
+                students
+            })
         }
+        this.logger.log("}")
     }
 
     async createReport(createReportDto: any) {
         let projects = await this.projectRepository.find({
             where: {
-                year: 2023, term: 1
+               period: {id: 8}
             }
         })
 

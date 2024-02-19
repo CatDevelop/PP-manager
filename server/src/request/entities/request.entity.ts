@@ -54,6 +54,10 @@ export class Request {
     @JoinColumn({ name: 'customer_user'})
     customer_user: CustomerUser;
 
+    @ManyToOne(() => Tag, (tag) => tag.id, {nullable: true})
+    @JoinColumn({ name: 'track'})
+    track: Tag;
+
     @ManyToMany(() => Tag, (tag) => tag.requests, {
         cascade: true
     })

@@ -16,9 +16,11 @@ import {GetRequestsPagesCountDto} from "./dto/get-requests-pages-count.dto";
 import {Builder, By, until} from "selenium-webdriver";
 import {ConfigService} from "@nestjs/config";
 import {Options} from "selenium-webdriver/chrome";
+import {PeriodService} from "../period/period.service";
+
 const XLSX = require('xlsx');
 const JS_XLSX = require('js-xlsx');
-const { htmlToText } = require('html-to-text');
+const {htmlToText} = require('html-to-text');
 
 
 @Injectable()
@@ -29,6 +31,7 @@ export class PartnerService {
         private readonly customerCompanyService: CustomerCompanyService,
         private readonly customerUserService: CustomerUserService,
         private readonly configService: ConfigService,
+        private readonly periodService: PeriodService,
     ) {
     }
 
@@ -70,14 +73,16 @@ export class PartnerService {
             redirect: 'follow'
         };
 
-        let pagesCount = await this.getRequestsPagesCount({...parseRequestsDto, semester: "2023-1"});
+        let period = await this.periodService.findOne(parseRequestsDto.period_id)
+
+        let pagesCount = await this.getRequestsPagesCount({...parseRequestsDto, semester: period.year + "-" + (period.term - 1)});
         console.log("Pages count: ", pagesCount)
 
         for (let i = 1; i < (pagesCount + 1); i++) {
             console.log("Page: ", i)
             try {
                 let currentRequestsResponse = await fetch(
-                    "https://partner.urfu.ru/learning/request/?mode=requests&semester=2023-1&own=me&page=" + i,
+                    "https://partner.urfu.ru/learning/request/?mode=requests&semester=" + period.year + "-" + (period.term - 1) + "&own=me&page=" + i,
                     requestOptions
                 )
 
@@ -149,14 +154,16 @@ export class PartnerService {
             redirect: 'follow'
         };
 
-        let pagesCount = await this.getPassportsPagesCount({...parsePassportsDto, semester: "2023-1"});
+        let period = await this.periodService.findOne(parsePassportsDto.period_id)
+
+        let pagesCount = await this.getPassportsPagesCount({...parsePassportsDto, semester: period.year + "-" + (period.term - 1)});
         console.log("Pages count: ", pagesCount)
 
 
         for (let i = 1; i < (pagesCount + 1); i++) {
             try {
                 let currentPassportsResponse = await fetch(
-                    "https://partner.urfu.ru/learning/request/?mode=projects&semester=2023-1&own=me&page=" + i,
+                    "https://partner.urfu.ru/learning/request/?mode=projects&semester=" + period.year + "-" + (period.term - 1) + "&own=me&page=" + i,
                     requestOptions
                 )
 
@@ -166,7 +173,7 @@ export class PartnerService {
                     let currentPassport = await this.parsePassport({...parsePassportsDto, id: passport.id})
                     let currentRequest = await this.parseRequest({
                         ...parsePassportsDto,
-                        id: currentPassport.source.id
+                        id: currentPassport.source?.id || currentPassport.id
                     })
 
                     if (!await this.customerCompanyService.isCreate(currentRequest.partner.id)) {
@@ -244,7 +251,7 @@ export class PartnerService {
 
         try {
             let pagesCountRequest = await fetch(
-                "https://partner.urfu.ru/learning/request/?mode=requests&own=me&semester=2023-1",
+                "https://partner.urfu.ru/learning/request/?mode=requests&own=me&semester=" + getRequestsPagesCountDto.semester,
                 requestOptions
             )
             let pagesCountRequestJSON = await pagesCountRequest.json();
@@ -302,6 +309,81 @@ export class PartnerService {
             ...fullPassport,
             mainProgram
         }
+    }
+
+    async parseAndCreatePassport(parsePassportDto: ParsePassportDto) {
+        let myHeaders = new Headers();
+        myHeaders.append("Cookie", "session-cookie=" + parsePassportDto.session_cookie + ";key=" + parsePassportDto.token);
+
+        let requestOptions: RequestInit = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        let currentPassport = await this.parsePassport(parsePassportDto)
+        let currentRequest = await this.parseRequest({
+            ...parsePassportDto,
+            id: currentPassport.source?.id || parsePassportDto.id
+        })
+
+        if (!await this.customerCompanyService.isCreate(currentRequest.partner.id)) {
+            // Компании заказчика не существует
+            console.log("Create customer company")
+            await this.customerCompanyService.create(
+                CustomerCompanyMappers.partnerToCreateAndUpdateDto(currentRequest.partner)
+            )
+        } else {
+            console.log("Update customer company")
+            await this.customerCompanyService.update(
+                currentRequest.partner.id,
+                CustomerCompanyMappers.partnerToCreateAndUpdateDto(currentRequest.partner)
+            )
+        }
+
+        if (!await this.customerUserService.isCreate(currentRequest.manager.id)) {
+            // Заказчика не существует
+            console.log("Create customer user")
+            await this.customerUserService.create(
+                CustomerUserMappers.toCreateDto(currentRequest.manager)
+            )
+        } else {
+            console.log("Update customer user")
+            await this.customerUserService.update(
+                currentRequest.manager.id,
+                CustomerUserMappers.toUpdateDto(currentRequest.manager)
+            )
+        }
+
+        if (!await this.requestService.isCreate(currentRequest.id)) {
+            // Заявки не существует
+            console.log("Create request")
+            await this.requestService.create(
+                RequestMappers.toCreateDto(currentRequest)
+            )
+        } else {
+            console.log("Update request")
+            await this.requestService.update(
+                currentRequest.id,
+                RequestMappers.toUpdateDto(currentRequest)
+            )
+        }
+
+        if (!await this.passportService.isCreate(parsePassportDto.id)) {
+            console.log("Create passport")
+            // Паспорта не существует
+            await this.passportService.create(
+                PassportMappers.toCreateDto(currentPassport)
+            )
+        } else {
+            console.log("Update passport")
+            await this.passportService.update(
+                currentPassport.id,
+                PassportMappers.toUpdateDto(currentPassport)
+            )
+        }
+
+        return;
     }
 
     async parseRequest(parseRequestDto: ParseRequestDto) {
@@ -366,13 +448,13 @@ export class PartnerService {
         };
 
         requests.forEach((request, index) => {
-            requestsSheet["A" + (index + 2)] = {t: 's', v: request.uid, }
+            requestsSheet["A" + (index + 2)] = {t: 's', v: request.uid,}
             requestsSheet["B" + (index + 2)] = {t: 's', v: request.name}
             requestsSheet["C" + (index + 2)] = {t: 's', v: htmlToText(request.description)}
             requestsSheet["D" + (index + 2)] = {t: 's', v: htmlToText(request.goal)}
             requestsSheet["E" + (index + 2)] = {t: 's', v: htmlToText(request.criteria)}
             requestsSheet["F" + (index + 2)] = {t: 's', v: htmlToText(request.status)}
-            requestsSheet["G" + (index + 2)] = {t: 's', v: "https://partner.urfu.ru/ptraining/services/learning/#/requests/"+request.id}
+            requestsSheet["G" + (index + 2)] = {t: 's', v: "https://partner.urfu.ru/ptraining/services/learning/#/requests/" + request.id}
         })
 
         XLSX.utils.book_append_sheet(workbook, requestsSheet, 'Заявки');

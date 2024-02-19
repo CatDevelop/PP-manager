@@ -11,10 +11,10 @@ export class SheduleManagerService {
     ) {
     }
 
-    // @Cron(CronExpression.EVERY_2_HOURS)
-    // async handleCron() {
-    //     const tokens = await this.partnerService.getTokens();
-    //     await this.partnerService.parseRequests(tokens);
-    //     await this.partnerService.parsePassports(tokens);
-    // }
+    @Cron(CronExpression.EVERY_2_HOURS)
+    async handleCron() {
+        const tokens = await this.partnerService.getTokens();
+        await this.partnerService.parseRequests({...tokens, period_id: 8});
+        await this.partnerService.parsePassports({...tokens, period_id: 8});
+    }
 }

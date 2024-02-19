@@ -15,10 +15,12 @@ import {CustomerCompanyService} from "../customer-company/customer-company.servi
 import {RequestService} from "../request/request.service";
 import {PassportService} from "../passport/passport.service";
 import {CourseService} from "../course/course.service";
+import {Period} from "../period/entities/period.entity";
+import {PeriodService} from "../period/period.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag])],
+  imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag, Period])],
   controllers: [SheduleManagerController],
-  providers: [SheduleManagerService, ConfigService, PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService],
+  providers: [SheduleManagerService, ConfigService, PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService, PeriodService],
 })
 export class SheduleManagerModule {}

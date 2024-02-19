@@ -6,6 +6,8 @@ import {Project} from "./entities/project.entity";
 import {Repository} from "typeorm";
 import {FindAllProjectsDto} from "./dto/find-all-projects.dto";
 import {Student} from "../student/entities/student.entity";
+import {Passport} from "../passport/entities/passport.entity";
+import {Period} from "../period/entities/period.entity";
 
 @Injectable()
 export class ProjectService {
@@ -14,6 +16,10 @@ export class ProjectService {
         private readonly projectRepository: Repository<Project>,
         @InjectRepository(Student)
         private readonly studentRepository: Repository<Student>,
+        @InjectRepository(Passport)
+        private readonly passportRepository: Repository<Passport>,
+        @InjectRepository(Period)
+        private readonly periodRepository: Repository<Period>,
     ) {
     }
 
@@ -23,29 +29,14 @@ export class ProjectService {
         if (isProjectExist)
             throw new BadRequestException("The project already exist!");
 
-        // let students = []
-        // createProjectDto.team.thematicGroups.forEach((group, groupIndex) => {
-        //     group.students.forEach((student, studentIndex) => {
-        //         if (!students.find(s => s.key === student.userId))
-        //             students.push(
-        //                 {
-        //                     key: student.userId,
-        //                     fullname: student.fullname
-        //                 }
-        //             )
-        //     })
-        // })
-
+        const passport = await this.passportRepository.findOneBy({uid: createProjectDto.passport})
         const newProject = {
             id: createProjectDto.project.id,
-            passport: createProjectDto.project.passportNumber,
+            passport: passport ? {id: passport.id} : undefined,
             name: createProjectDto.project.title,
             students: createProjectDto.students.map(student => ({id: student})),
             curator: createProjectDto.project.mainCurator?.fullname || "",
-            // @ts-ignore
-            year: createProjectDto.details.period.year,
-            // @ts-ignore
-            term: createProjectDto.details.period.term,
+            period_id: createProjectDto.period_id,
             // @ts-ignore
             isHaveReport: !!createProjectDto.documents.reportId,
             // @ts-ignore
@@ -55,10 +46,10 @@ export class ProjectService {
             // @ts-ignore
             status: createProjectDto.results.status ? createProjectDto.results.status.isProjectCompleted ? "Завершённый" : "Активный" : "#ОШИБКА",
 
-            details: JSON.stringify(createProjectDto.details) ,
+            details: JSON.stringify(createProjectDto.details),
             results: JSON.stringify(createProjectDto.results || {}),
-            documents:  JSON.stringify(createProjectDto.documents),
-            team:  JSON.stringify(createProjectDto.team),
+            documents: JSON.stringify(createProjectDto.documents),
+            team: JSON.stringify(createProjectDto.team),
         };
 
         const res = await this.projectRepository.save(newProject);
@@ -67,15 +58,12 @@ export class ProjectService {
 
     async findAll(findAllProjectsDto: FindAllProjectsDto) {
         const projects = await this.projectRepository.find({
-            where: {year: findAllProjectsDto.year, term: findAllProjectsDto.term},
+            where: {period: {id: findAllProjectsDto.period_id}},
             select: {
                 id: true,
-                passport: true,
                 name: true,
                 students: true,
                 curator: true,
-                year: true,
-                term: true,
                 isHaveReport: true,
                 isHavePresentation: true,
                 comissionScore: true,
@@ -83,6 +71,16 @@ export class ProjectService {
                 updated_at: true
             },
             relations: {
+                period: true,
+                passport: {
+                    request: {
+                        period_id: true,
+                        tags: true,
+                        customer_user: {
+                            customer_company: true
+                        }
+                    }
+                },
                 students: true
             }
         })
@@ -98,6 +96,19 @@ export class ProjectService {
 
         return await this.projectRepository.findOne({
                 where: {id},
+                relations: {
+                    period: true,
+                    passport: {
+                        request: {
+                            period_id: true,
+                            tags: true,
+                            customer_user: {
+                                customer_company: true
+                            }
+                        }
+                    },
+                    students: true
+                }
             },
         )
     }
@@ -123,15 +134,15 @@ export class ProjectService {
             delete updateProjectDto["students"];
         }
 
+        const passport = await this.passportRepository.findOneBy({uid: updateProjectDto.passport})
+        const period = await this.periodRepository.findOneBy({year: updateProjectDto.details.period.year, term: updateProjectDto.details.period.term})
+
         await this.projectRepository.update(project.id, {
-            passport: updateProjectDto.project.passportNumber,
+            passport: passport ? {id: passport.id} : undefined,
             name: updateProjectDto.project.title,
             // students: JSON.stringify(students),
             curator: updateProjectDto.project.mainCurator.fullname,
-            // @ts-ignore
-            year: updateProjectDto.details.period.year,
-            // @ts-ignore
-            term: updateProjectDto.details.period.term,
+            period: {id: period.id},
             // @ts-ignore
             isHaveReport: !!updateProjectDto.documents.reportId,
             // @ts-ignore
@@ -142,10 +153,10 @@ export class ProjectService {
             status: updateProjectDto.results.status ? updateProjectDto.results.status.isProjectCompleted ? "Завершённый" : "Активный" : "#ОШИБКА",
 
 
-            details: JSON.stringify(updateProjectDto.details) ,
+            details: JSON.stringify(updateProjectDto.details),
             results: JSON.stringify(updateProjectDto.results || {}),
-            documents:  JSON.stringify(updateProjectDto.documents),
-            team:  JSON.stringify(updateProjectDto.team),
+            documents: JSON.stringify(updateProjectDto.documents),
+            team: JSON.stringify(updateProjectDto.team),
         });
 
         return this.projectRepository.findOne({

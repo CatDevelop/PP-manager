@@ -2,7 +2,6 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Period} from "./entities/period.entity";
-import {CreateProjectDto} from "../project/dto/create-project.dto";
 import {CreatePeriodDto} from "./dto/create-period.dto";
 
 @Injectable()
@@ -20,5 +19,23 @@ export class PeriodService {
             throw new BadRequestException("The period already exist!");
 
         await this.periodRepository.save(createPeriodDto);
+    }
+
+    async findOne(id: number) {
+        const period = await this.periodRepository.findOneBy({id})
+
+        if (!period)
+            throw new BadRequestException("The period not found!");
+
+        return period;
+    }
+
+    async getId(year: number, term: number) {
+        const period = await this.periodRepository.findOneBy({year, term})
+
+        if (!period)
+            throw new BadRequestException("The period not found!");
+
+        return period;
     }
 }

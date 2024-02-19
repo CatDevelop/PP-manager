@@ -1,7 +1,8 @@
-import {Body, Controller, Get, Post, UseGuards, UsePipes, ValidationPipe} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, UsePipes, ValidationPipe} from '@nestjs/common';
 import {PartnerService} from './partner.service';
 import {ParsePassportsDto} from "./dto/parse-passports.dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {ParsePassportDto} from "./dto/parse-passport.dto";
 
 @Controller('partner')
 export class PartnerController {
@@ -13,6 +14,13 @@ export class PartnerController {
     @UseGuards(JwtAuthGuard)
     parsePassports(@Body() parsePassportsDto: ParsePassportsDto) {
         return this.partnerService.parsePassports(parsePassportsDto);
+    }
+
+    @Post("passport/parse/:id")
+    @UsePipes(new ValidationPipe())
+    @UseGuards(JwtAuthGuard)
+    parsePassport(@Param('id', ParseIntPipe) id: number, @Body() parsePassportDto: ParsePassportDto) {
+        return this.partnerService.parseAndCreatePassport({...parsePassportDto, id});
     }
 
     @Post("request/parse")

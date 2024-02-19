@@ -35,7 +35,7 @@ export function TeamprojectProjectsPage() {
     const projects = useProjects()
 
     useEffect(() => {
-        dispatch(getAllProjects({year, term}))
+        dispatch(getAllProjects({period_id: 8}))
     }, [year, term]);
 
     useEffect(() => {

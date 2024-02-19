@@ -5,8 +5,5 @@ export class ParseTeamprojectDto {
     token: string;
 
     @IsNumber()
-    year: number;
-
-    @IsNumber()
-    term: number;
+    period_id: number;
 }

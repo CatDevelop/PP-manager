@@ -6,5 +6,7 @@ export class CreateProjectDto {
     results: any;
     documents: any;
     team: any;
-    students: number[]
+    students: number[];
+    period_id: number;
+    passport: string;
 }

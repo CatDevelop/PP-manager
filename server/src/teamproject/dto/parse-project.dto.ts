@@ -1,12 +1,11 @@
 import {IsNumber, IsString} from "class-validator";
 
-export class ParsePassportsDto {
+export class ParseProjectDto {
     @IsString()
     token: string;
 
     @IsString()
-    session_cookie: string
+    id: string;
 
-    @IsNumber()
-    period_id: number;
+    project: any;
 }
