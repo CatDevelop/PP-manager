@@ -1,4 +1,4 @@
-import {HOST} from './host';
+import HOST from './host';
 
 const USER = `${HOST}/user`;
 const AUTH = `${HOST}/auth`;
