@@ -19,7 +19,6 @@ export namespace RequestMappers {
             period_id: request.semester,
             status: request.statuses[0].text,
             date: request.date,
-            // customer_company_id: request.partner.id,
             customer_user_id: request.manager.id
         };
     }

@@ -21,6 +21,6 @@ import {PeriodService} from "../period/period.service";
 @Module({
   imports: [TypeOrmModule.forFeature([Passport, Request, CustomerCompany, CustomerUser, Course, Tag, Period])],
   controllers: [SheduleManagerController],
-  providers: [SheduleManagerService, ConfigService, PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService, PeriodService],
+  providers: [SheduleManagerService, PartnerService, PassportService, RequestService, CourseService, CustomerCompanyService, CustomerUserService, PeriodService],
 })
 export class SheduleManagerModule {}

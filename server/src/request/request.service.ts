@@ -77,6 +77,13 @@ export class RequestService {
             delete updateRequestDto["period_id"];
         }
 
+        if ("track" in updateRequestDto) {
+            await this.requestRepository.update(request.id, {
+                track: {id: updateRequestDto.track},
+            });
+            delete updateRequestDto["track"];
+        }
+
         if ("customer_user_id" in updateRequestDto) {
             await this.requestRepository.update(request.id, {
                 customer_user: {id: updateRequestDto.customer_user_id},
