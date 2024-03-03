@@ -81,7 +81,7 @@ export function PartnersCustomerUsersPage() {
             phone: customerUser.phone,
             qualification: customerUser.qualification,
             requests_count: customerUser.requests.length,
-            customer_company_name: customerUser.customer_company.name
+            customer_company_name: customerUser.customer_company?.name
         })))
     }, [customerUsers.customerUsers])
 
