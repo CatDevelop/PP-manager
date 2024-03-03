@@ -4,7 +4,8 @@ import {useDispatch} from "react-redux";
 import styles from "./RequestTagsCellEditor.module.css"
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
 import {updateRequest} from "../../../../store/slices/requestSlice";
-import {setRequests} from "../../../../store/slices/requestsSlice";
+import {setEditedRequests, setRequests} from "../../../../store/slices/requestsSlice";
+import {useRequests} from "../../../../hooks/use-requests";
 
 const {TextArea} = Input;
 const {Column, ColumnGroup} = Table;
@@ -16,8 +17,8 @@ export default function RequestTagsCellEditor(props) {
     const [isLoading, setIsLoading] = useState(false);
     const [tagOptions, setTagOptions] = useState([])
     const [requestTags, setRequestTags] = useState([])
+    const requests = useRequests()
 
-    const [isEdit, setIsEdit] = useState(false)
     useEffect(() => {
         setTagOptions(props.tags.map(tag => ({
             value: tag.id,
@@ -30,15 +31,9 @@ export default function RequestTagsCellEditor(props) {
     }, [props.request])
 
 
-    if (!isEdit) {
+    if (!props.isEdit) {
         return (
             <div className={styles.tags__container}>
-                <Button
-                    icon={<EditOutlined/>}
-                    type="text"
-                    onClick={() => setIsEdit(true)}
-                    className={styles.tags__editButton}
-                />
                 <div className={styles.tags__list}>
                     {props.value.map(tag => {
                         return <Tag color={tag.color}>{tag.text}</Tag>
@@ -48,41 +43,19 @@ export default function RequestTagsCellEditor(props) {
         )
     }
 
-    const saveRequest = () => {
-        if (!isLoading) {
-            setIsLoading(true);
-            message.loading({content: "Сохраняю заявку...", key: 'updateRequest', duration: 0})
-
-            dispatch(updateRequest({
-                id: props.request.id,
-                tags: requestTags
-            })).then((response) => {
-                setIsLoading(false)
-                message.destroy('updateRequest')
-                message.success({content: "Вы успешно обновили заявку!"})
-                let newRequests = [...props.requests]
-                let currentIndex = newRequests.findIndex(request => request.id === props.request.id)
-                newRequests[currentIndex] = {...newRequests[currentIndex], tags: props.tags.filter(tag => requestTags.includes(tag.id))};
-                dispatch(setRequests(newRequests))
-            }, (error) => {
-                setIsLoading(false)
-                message.destroy('updateRequest')
-                message.error({content: error.message})
-            });
+    const editRequestTrack = (value) => {
+        setRequestTags(value)
+        const editedRequest = requests.editedRequests.find(editedRequest => editedRequest.id === props.request.id)
+        if(!editedRequest) {
+            console.log(value)
+            dispatch(setEditedRequests([...requests.editedRequests, {id: props.request.id, tags: value}]))
+        } else {
+            dispatch(setEditedRequests([...requests.editedRequests.filter(editedRequestFilter => editedRequestFilter.id !== editedRequest.id), {...editedRequest, tags: value}]))
         }
     }
 
     return (
         <div className={styles.tags__container}>
-            <Button
-                icon={<CheckCircleOutlined/>}
-                type="text"
-                onClick={() => {
-                    setIsEdit(false);
-                    saveRequest();
-                }}
-                className={styles.tags__editButton}
-            />
             <Select
                 style={{
                     width: '100%',
@@ -95,7 +68,7 @@ export default function RequestTagsCellEditor(props) {
                 }
                 mode="multiple"
                 placeholder="Выберите теги"
-                onChange={(value) => setRequestTags(value)}
+                onChange={(value) => editRequestTrack(value)}
                 options={tagOptions}
                 value={requestTags}
             />

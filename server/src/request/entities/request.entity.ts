@@ -46,10 +46,6 @@ export class Request {
     @OneToMany(() => Passport, (passport) => passport.request, {nullable: true})
     passports: Passport[];
 
-    // @ManyToOne(() => CustomerCompany, (customerCompany) => customerCompany.id, {nullable: true})
-    // @JoinColumn({ name: 'customer_company'})
-    // customer_company: CustomerCompany;
-
     @ManyToOne(() => CustomerUser, (customerUser) => customerUser.id, {nullable: true})
     @JoinColumn({ name: 'customer_user'})
     customer_user: CustomerUser;

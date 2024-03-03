@@ -20,7 +20,6 @@ export class PassportService {
 
     async isCreate(id: number) {
         const passport = await this.passportRepository.findOneBy({id})
-        console.log(passport)
         return !!passport;
     }
 
@@ -102,6 +101,7 @@ export class PassportService {
             // },
             relations: {
                 request: {
+                    track: true,
                     tags: true,
                     period_id: true,
                     customer_user: {

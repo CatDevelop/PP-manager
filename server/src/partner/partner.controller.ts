@@ -33,8 +33,15 @@ export class PartnerController {
     @Post("request/report")
     @UsePipes(new ValidationPipe())
     @UseGuards(JwtAuthGuard)
-    createReport() {
+    createRequestReport() {
         return this.partnerService.createRequestReport();
+    }
+
+    @Post("passport/report")
+    @UsePipes(new ValidationPipe())
+    @UseGuards(JwtAuthGuard)
+    createPassportReport() {
+        return this.partnerService.createPassportReport();
     }
 
     @Get("token")

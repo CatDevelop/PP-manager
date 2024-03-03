@@ -7,10 +7,13 @@ import styles from './PartnersRequestsPage.module.css'
 import {removeProject} from "../../../../store/slices/projectSlice";
 import RequestsTableSettings from "../../components/RequestsTableSettings/RequestsTableSettings";
 import {useRequests} from "../../../../hooks/use-requests";
-import {getAllRequests} from "../../../../store/slices/requestsSlice";
+import {getAllRequests, setEditedRequests, setEditRequests, setRequests} from "../../../../store/slices/requestsSlice";
 import RequestsTable from "../../components/RequestsTable/RequestsTable";
-import {removeProjects} from "../../../../store/slices/projectsSlice";
 import {removePassports} from "../../../../store/slices/passportsSlice";
+import {updateRequest} from "../../../../store/slices/requestSlice";
+import {removeStudent} from "../../../../store/slices/studentSlice";
+import {usePeriods} from "../../../../hooks/use-periods";
+import {getAllPeriods} from "../../../../store/slices/periodsSlice";
 
 export const initialRequestsTableColumns = [
     {
@@ -46,6 +49,10 @@ export const initialRequestsTableColumns = [
         name: 'Статус',
     },
     {
+        key: 'track',
+        name: 'Трек',
+    },
+    {
         key: 'tags',
         name: 'Теги',
     },
@@ -72,16 +79,17 @@ export function PartnersRequestsPage() {
     const dispatch = useDispatch();
     const {message} = App.useApp();
 
-    const [isParseModalOpen, setIsParseModalOpen] = useState(false);
     const [isSettingsTableOpen, setIsSettingsTableOpen] = useState(false);
     const [requestsTable, setRequestsTable] = useState([])
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEdit, setIsEdit] = useState(false);
     const [requestsTableColumns, setRequestsTableColumns] = useState(
         JSON.parse(localStorage.getItem("PP-manager-requests-columns")) ||
         initialRequestsTableColumns
     )
 
     const [year, setYear] = useState(2023)
-    const [term, setTerm] = useState(1)
+    const [term, setTerm] = useState(2)
 
     const handleChangeYear = (value) => {
         setYear(value)
@@ -92,18 +100,23 @@ export function PartnersRequestsPage() {
     }
 
     const requests = useRequests()
+    const periods = usePeriods()
 
     useEffect(() => {
-        dispatch(getAllRequests({period_id: 8}))
-    }, [year, term]);
+        if(!periods.isLoading) {
+            dispatch(getAllRequests({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+        }
+    }, [year, term, periods]);
 
     useEffect(() => {
+        dispatch(getAllPeriods())
         dispatch(removeProject())
         dispatch(removePassports())
+        dispatch(removeStudent())
     }, []);
 
     useEffect(() => {
-        setRequestsTable(requests.requests.map(request => ({
+        const parsedRequestsTable = requests.requests.map(request => ({
             id: request.id,
             uid: request.uid,
             name: request.name,
@@ -117,6 +130,7 @@ export function PartnersRequestsPage() {
             status: request.status,
             period: request.period_id,
             tags: request.tags,
+            track: request.track,
             customer_id: request.customer_user.id,
             customer_name: (request.customer_user.first_name || "") + " " + (request.customer_user.last_name || "") + " " + (request.customer_user.middle_name || ""),
             customer_first_name: request.customer_user.first_name,
@@ -124,8 +138,58 @@ export function PartnersRequestsPage() {
             customer_middle_name: request.customer_user.middle_name,
             customer_company_name: request.customer_user.customer_company.name,
             students_count: request.students_count
-        })))
+        }))
+        setRequestsTable(parsedRequestsTable);
+        dispatch(setEditRequests(parsedRequestsTable));
     }, [requests.requests])
+
+     const saveRequests = async () => {
+        if (!isLoading) {
+            setIsLoading(true);
+            message.loading({content: "Сохраняю заявки...", key: 'updateRequests', duration: 0})
+
+            for (let editedRequest of requests.editedRequests) {
+                await dispatch(updateRequest({
+                    id: editedRequest.id,
+                    tags: editedRequest.tags,
+                    track: editedRequest.track,
+                    students_count: editedRequest.students_count === null ? 0 : editedRequest.students_count,
+                }))
+            }
+            setIsLoading(false)
+            message.destroy('updateRequests')
+            message.success({content: "Вы успешно обновили заявки!"})
+            dispatch(getAllRequests({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+            dispatch(setEditedRequests([]))
+
+            // const editedRequests = requests.requests.map(request => {
+            //     const editedRequest = requests.editRequests.find(editRequest => editRequest.is === request.id)
+            //
+            //     if(Object.toJSON(editedRequest) !== Object.toJSON(request))
+            //         return editedRequest
+            // })
+            //
+            // editedRequests.map(editRequest => {
+            //     dispatch(updateRequest({
+            //         id: editRequest.id,
+            //         tags: editRequest.tags.map(tag => tag.id)
+            //     })).then((response) => {
+            //
+            //         message.destroy('updateRequests')
+            //         message.success({content: "Вы успешно обновили заявки!"})
+            //         let newRequests = [...props.requests]
+            //         let currentIndex = newRequests.findIndex(request => request.id === props.request.id)
+            //         newRequests[currentIndex] = {...newRequests[currentIndex], tags: props.tags.filter(tag => requestTags.includes(tag.id))};
+            //         dispatch(setRequests(newRequests))
+            //     }, (error) => {
+            //         setIsLoading(false)
+            //         message.destroy('updateRequests')
+            //         message.error({content: error.message})
+            //     });
+            // })
+            // setIsLoading(false)
+        }
+    }
 
     return (
         <div className={styles.page}>
@@ -137,14 +201,11 @@ export function PartnersRequestsPage() {
                     <Select
                         defaultValue={2023}
                         onChange={handleChangeYear}
-                        options={[
-                            {value: 2023, label: '2023/2024'},
-                            {value: 2022, label: '2022/2023'},
-                            {value: 2021, label: '2021/2022'},
-                            {value: 2020, label: '2020/2021'},
-                            {value: 2019, label: '2019/2020'},
-                            {value: 2018, label: '2018/2019'},
-                        ]}
+                        options={
+                            [...new Set(periods.periods.map(period => period.year))].map(year => ({
+                                value: year, label: `${year}/${year + 1}`
+                            }))
+                        }
                     />
 
                     <Select
@@ -157,19 +218,15 @@ export function PartnersRequestsPage() {
                     />
                 </div>
 
-                {/*<div className={styles.buttons}>*/}
-                {/*    <Button*/}
-                {/*        type="primary"*/}
-                {/*        onClick={() => setIsParseModalOpen(true)}*/}
-                {/*    >*/}
-                {/*        Обновить информацию*/}
-                {/*    </Button>*/}
-                {/*</div>*/}
-
                 <div className={styles.buttons}>
-                    <Button
-                        onClick={() => setIsSettingsTableOpen(true)}
-                    >
+                    <Button onClick={() => {
+                        if(isEdit)
+                            saveRequests()
+                        setIsEdit(!isEdit)
+                    }}>
+                        {isEdit ? "Сохранить данные" : "Редактировать данные"}
+                    </Button>
+                    <Button onClick={() => setIsSettingsTableOpen(true)}>
                         Настроить таблицу
                     </Button>
                 </div>
@@ -179,8 +236,10 @@ export function PartnersRequestsPage() {
                 requests.isLoading ?
                     <Spin/> :
                     <RequestsTable
+                        isEdit={isEdit}
                         defaultRequests={requests}
                         requests={requestsTable}
+                        editRequests={requests.editRequests}
                         columns={requestsTableColumns}
                     />
             }

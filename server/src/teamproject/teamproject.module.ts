@@ -9,11 +9,13 @@ import {Student} from "../student/entities/student.entity";
 import {Passport} from "../passport/entities/passport.entity";
 import {PeriodService} from "../period/period.service";
 import {Period} from "../period/entities/period.entity";
+import {StudentProjectResult} from "../student-project-results/entities/student-project-result.entity";
+import {StudentProjectResultService} from "../student-project-results/student-project-result.service";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Project, Student, Passport, Period])],
+    imports: [TypeOrmModule.forFeature([Project, Student, Passport, Period, StudentProjectResult])],
     controllers: [TeamprojectController],
-    providers: [TeamprojectService, ProjectService, StudentService, PeriodService],
+    providers: [TeamprojectService, ProjectService, StudentService, PeriodService, StudentProjectResultService],
 })
 export class TeamprojectModule {
 }

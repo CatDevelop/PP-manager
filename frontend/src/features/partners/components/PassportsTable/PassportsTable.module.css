@@ -44,3 +44,7 @@
     top: 2px;
     right: 2px;
 }
+
+.clickable {
+    color: var(--text-color) !important;
+}

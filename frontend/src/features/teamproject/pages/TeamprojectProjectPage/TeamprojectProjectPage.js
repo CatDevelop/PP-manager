@@ -1,7 +1,7 @@
 import SideBar from "../../../../components/SideBar/SideBar";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {App, Breadcrumb, Descriptions, Tag, Typography} from "antd";
+import {App, Breadcrumb, Descriptions, Spin, Tag, Typography} from "antd";
 import {useTeamproject} from "../../../../hooks/use-teamproject";
 import {ArrowLeftOutlined, FundProjectionScreenOutlined} from "@ant-design/icons";
 import styles from "./TeamprojectProjectPage.module.css"
@@ -27,6 +27,7 @@ export function TeamprojectProjectPage() {
         return (
             <div>
                 <SideBar selectedKeys={["TeamprojectProjects"]}/>
+                <Spin/>
             </div>
         )
 

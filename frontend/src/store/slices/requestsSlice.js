@@ -8,6 +8,7 @@ export const getAllRequests = createAsyncThunk(
             let response = await fetch(
                 `${API.GET_REQUESTS}/${data.period_id}/`,
                 {
+                    cache: "no-cache",
                     method: 'get',
                     headers: {
                         "Authorization": "Bearer " + localStorage.getItem("PP-manager-accessToken")
@@ -31,6 +32,8 @@ export const getAllRequests = createAsyncThunk(
 
 const initialState = {
     requests: [],
+    editRequests: [],
+    editedRequests: [],
     isLoading: true
 };
 
@@ -42,8 +45,20 @@ const requestsSlice = createSlice({
                 state.requests = action.payload
                 state.isLoading = false;
             },
+            setEditRequests(state, action) {
+                state.editRequests = action.payload
+                state.isLoading = false;
+            },
+            setEditedRequests(state, action) {
+                state.editedRequests = action.payload
+                state.isLoading = false;
+            },
             removeRequests(state) {
                 state.requests = []
+                state.isLoading = true;
+            },
+            removeEditRequests(state) {
+                state.editRequests = []
                 state.isLoading = true;
             }
         },
@@ -54,6 +69,6 @@ const requestsSlice = createSlice({
     })
 ;
 
-export const {setRequests, removeRequests} = requestsSlice.actions;
+export const {setRequests, setEditRequests, setEditedRequests, removeRequests, removeEditRequests} = requestsSlice.actions;
 
 export default requestsSlice.reducer;

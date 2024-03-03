@@ -5,7 +5,7 @@ import {
     FileProtectOutlined,
     FundProjectionScreenOutlined,
     LineChartOutlined,
-    LogoutOutlined, RobotOutlined, SettingOutlined
+    LogoutOutlined, RobotOutlined, SettingOutlined, UserOutlined
 } from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
@@ -28,16 +28,13 @@ export default function SideBar(props) {
     }, [])
 
     const topMenu = [
-        // getItem('Основная', 'Home', <HomeOutlined/>),
-        // {type: 'divider'},
         getItem('Заявки', 'PartnersRequests', <AppstoreOutlined />),
         getItem('Паспорта', 'PartnersPassports', <FileProtectOutlined/>),
         getItem('Проекты', 'TeamprojectProjects', <FundProjectionScreenOutlined/>),
+        getItem('Студенты', 'TeamprojectStudents', <UserOutlined />),
         getItem('Заказчики', 'PartnersCustomerCompanies', <BankOutlined />),
         getItem('Представители', 'PartnersCustomerUsers', <RobotOutlined />),
-        // getItem('Аналитика', 'Analytic', "Аналитика"),
         getItem('Аналитика', 'Analytic', <LineChartOutlined />),
-        // getItem('Пользователи', 'TeamprojectUsers', <UserOutlined />),
     ];
     const bottomMenu = [
         // getItem('Настройки', 'Settings', <SettingOutlined/>),
@@ -64,8 +61,8 @@ export default function SideBar(props) {
             case 'TeamprojectProjects':
                 navigate('/teamproject/projects')
                 break
-            case 'TeamprojectUsers':
-                navigate('/teamproject/users')
+            case 'TeamprojectStudents':
+                navigate('/teamproject/students')
                 break
             case 'Analytic':
                 navigate('/analytic')

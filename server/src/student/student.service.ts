@@ -4,14 +4,11 @@ import {UpdateStudentDto} from './dto/update-student.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import {Student} from "./entities/student.entity";
-import {CreatePassportDto} from "../passport/dto/create-passport.dto";
-import {UpdatePassportDto} from "../passport/dto/update-passport.dto";
-import {FindOnePassportDto} from "../passport/dto/find-one-passport.dto";
 import {FindOneStudentDto} from "./dto/find-one-student.dto";
+import {FindAllStudentsDto} from "./dto/find-all-students.dto";
 
 @Injectable()
 export class StudentService {
-
     constructor(
         @InjectRepository(Student)
         private readonly studentRepository: Repository<Student>,
@@ -39,8 +36,48 @@ export class StudentService {
         return {passportID: res.id}
     }
 
-    findAll() {
-        return `This action returns all student`;
+    async findAll(findAllStudentsDto: FindAllStudentsDto) {
+        const students = await this.studentRepository.find({
+            where: {projects: {passport: {request: {period_id: {id: findAllStudentsDto.period_id}}}}},
+            select: {
+                projects_result: {
+                    id: true,
+                    totalScore: true,
+                    expertsScore: true,
+                    finalScore: true,
+                    retakedScore: true,
+                    brsScore: true,
+                    coefficient: true,
+                    project: {
+                        id: true
+                    }
+                },
+                projects: {
+                    id: true,
+                    name: true,
+                    curator: true,
+                    isHaveReport: true,
+                    isHavePresentation: true,
+                    comissionScore: true,
+                    status: true,
+                }
+            },
+            relations: {
+                projects_result: {
+                    project: true
+                },
+                projects: {
+                    period: true,
+                    passport: {
+                        request: {
+                            period_id: true
+                        }
+                    },
+                }
+            }
+        })
+
+        return students
     }
 
     async findOne(findOneStudentDto: FindOneStudentDto) {
@@ -48,9 +85,13 @@ export class StudentService {
             throw new NotFoundException("Student not found!")
 
         const student = await this.studentRepository.findOne({
-            where: {id: findOneStudentDto.id},
+            where: {id: findOneStudentDto.id, projects: {students_result: {student: {id: findOneStudentDto.id}}}},
             relations: {
+                // projects_result: true,
                 projects: {
+                    students_result: {
+                        student: true
+                    },
                     period: true,
                     passport: {
                         request: {

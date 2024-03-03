@@ -21,9 +21,9 @@ export class CustomerUserService {
     }
 
     async create(createCustomerUserDto: CreateCustomerUserDto) {
-        const isCustomerCompanyExist = await this.customerUserRepository.existsBy({id: createCustomerUserDto.id})
+        const isCustomerUserExist = await this.customerUserRepository.existsBy({id: createCustomerUserDto.id})
 
-        if (isCustomerCompanyExist)
+        if (isCustomerUserExist)
             throw new BadRequestException("The customer company already exist!");
 
         const newCustomerUser = {
@@ -38,8 +38,14 @@ export class CustomerUserService {
             customer_company: {id: createCustomerUserDto.customer_company_id}
         };
 
-        const res = await this.customerUserRepository.save(newCustomerUser);
-        return {customerCompanyID: res.id}
+        try {
+            const res = await this.customerUserRepository.save(newCustomerUser);
+            return {customerUserID: res.id}
+        } catch {
+            delete newCustomerUser["customer_company"]
+            const res = await this.customerUserRepository.save(newCustomerUser);
+            return {customerUserID: res.id}
+        }
     }
 
     async update(id: number, updateCustomerUserDto: UpdateCustomerUserDto) {
@@ -48,7 +54,7 @@ export class CustomerUserService {
         if (!customerUser)
             throw new NotFoundException("Customer user not found!")
 
-        await this.customerUserRepository.update(customerUser.id, {
+        const updateCustomerUser = {
             id: updateCustomerUserDto.id,
             username: updateCustomerUserDto.username,
             email: updateCustomerUserDto.email,
@@ -58,7 +64,14 @@ export class CustomerUserService {
             phone: updateCustomerUserDto.phone,
             qualification: updateCustomerUserDto.qualification,
             customer_company: {id: updateCustomerUserDto.customer_company_id}
-        });
+        };
+
+        try {
+            await this.customerUserRepository.update(customerUser.id, updateCustomerUser);
+        } catch {
+            delete updateCustomerUser["customer_company"]
+            await this.customerUserRepository.update(customerUser.id, updateCustomerUser);
+        }
 
         return this.customerUserRepository.findOne({
             where: {id},

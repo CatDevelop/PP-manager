@@ -2,16 +2,52 @@ import SideBar from "../../../../components/SideBar/SideBar";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import React, {useEffect, useState} from "react";
-import {App, Button, Modal, Select, Spin} from "antd";
-import {parseProjects} from "../../../../store/slices/teamprojectSlice";
+import {App, Button, Select, Spin} from "antd";
 import ParseModal from "../../components/ParseModal/ParseModal";
-import {useTeamproject} from "../../../../hooks/use-teamproject";
 import ProjectsTable from "../../components/ProjectsTable/ProjectsTable";
 import styles from './TeamprojectProjectsPage.module.css'
-import ExportButton from "../../components/ExportButton/ExportButton";
 import {useProjects} from "../../../../hooks/use-projects";
 import {getAllProjects} from "../../../../store/slices/projectsSlice";
 import {removeProject} from "../../../../store/slices/projectSlice";
+import ProjectsTableSettings from "../../components/ProjectsTableSettings/ProjectsTableSettings";
+import {removeStudent} from "../../../../store/slices/studentSlice";
+import {usePeriods} from "../../../../hooks/use-periods";
+import {getAllPeriods} from "../../../../store/slices/periodsSlice";
+
+export const initialProjectsTableColumns = [
+    {
+        key: 'passport_uid',
+        name: 'Паспорт',
+    },
+    {
+        key: 'name',
+        name: 'Название',
+    },
+    {
+        key: 'students',
+        name: 'Студенты',
+    },
+    {
+        key: 'curator',
+        name: 'Куратор',
+    },
+    {
+        key: 'isHaveReport',
+        name: 'Отчет',
+    },
+    {
+        key: 'isHavePresentation',
+        name: 'Презентация',
+    },
+    {
+        key: 'comissionScore',
+        name: 'Оценка комиссии',
+    },
+    {
+        key: 'status',
+        name: 'Статус',
+    },
+]
 
 export function TeamprojectProjectsPage() {
     const navigate = useNavigate()
@@ -19,10 +55,17 @@ export function TeamprojectProjectsPage() {
     const {message} = App.useApp();
     // const teamproject = useTeamproject()
 
+    const [isSettingsTableOpen, setIsSettingsTableOpen] = useState(false);
     const [isParseModalOpen, setIsParseModalOpen] = useState(false);
 
     const [year, setYear] = useState(2023)
-    const [term, setTerm] = useState(1)
+    const [term, setTerm] = useState(2)
+
+    const [projectsTable, setProjectsTable] = useState([])
+    const [projectsTableColumns, setProjectsTableColumns] = useState(
+        JSON.parse(localStorage.getItem("PP-manager-projects-columns")) ||
+        initialProjectsTableColumns
+    )
 
     const handleChangeYear = (value) => {
         setYear(value)
@@ -33,14 +76,35 @@ export function TeamprojectProjectsPage() {
     }
 
     const projects = useProjects()
+    const periods = usePeriods()
 
     useEffect(() => {
-        dispatch(getAllProjects({period_id: 8}))
-    }, [year, term]);
+        if (!periods.isLoading) {
+            dispatch(getAllProjects({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+        }
+    }, [year, term, periods]);
 
     useEffect(() => {
+        dispatch(getAllPeriods())
         dispatch(removeProject())
+        dispatch(removeStudent())
     }, []);
+
+    useEffect(() => {
+        setProjectsTable(projects.projects.map(project => ({
+            id: project.id,
+            name: project.name,
+            passport_id: project.passport?.id,
+            passport_uid: project.passport?.uid,
+            students: project.students,
+            students_name: project.students.map(student => student.fullname),
+            curator: project.curator,
+            isHaveReport: project.isHaveReport,
+            isHavePresentation: project.isHavePresentation,
+            comissionScore: project.comissionScore,
+            status: project.status,
+        })))
+    }, [projects])
 
     function selectElementContents() {
         let table = document.getElementsByClassName(['ant-table-tbody'])[0];
@@ -50,7 +114,6 @@ export function TeamprojectProjectsPage() {
     }
 
 
-    // console.log(teamproject)
     return (
         <div className={styles.page}>
             <SideBar selectedKeys={["TeamprojectProjects"]}/>
@@ -61,18 +124,15 @@ export function TeamprojectProjectsPage() {
                     <Select
                         defaultValue={2023}
                         onChange={handleChangeYear}
-                        options={[
-                            {value: 2023, label: '2023/2024'},
-                            {value: 2022, label: '2022/2023'},
-                            {value: 2021, label: '2021/2022'},
-                            {value: 2020, label: '2020/2021'},
-                            {value: 2019, label: '2019/2020'},
-                            {value: 2018, label: '2018/2019'},
-                        ]}
+                        options={
+                            [...new Set(periods.periods.map(period => period.year))].map(year => ({
+                                value: year, label: `${year}/${year + 1}`
+                            }))
+                        }
                     />
 
                     <Select
-                        defaultValue={1}
+                        defaultValue={2}
                         onChange={handleChangeTerm}
                         options={[
                             {value: 1, label: 'Осенний'},
@@ -83,30 +143,26 @@ export function TeamprojectProjectsPage() {
 
                 <div className={styles.buttons}>
                     <Button
-                        type="primary"
-                        onClick={() => setIsParseModalOpen(true)}
+                        onClick={() => setIsSettingsTableOpen(true)}
                     >
-                        Обновить информацию
+                        Настроить таблицу
                     </Button>
-
-                    {/*<Button*/}
-                    {/*    type="primary"*/}
-                    {/*    onClick={selectElementContents}*/}
-                    {/*>*/}
-                    {/*    Скопировать*/}
-                    {/*</Button>*/}
                 </div>
-
-
-                {/*<ExportButton projects={teamproject.projects}/>*/}
             </div>
 
             {
                 projects.isLoading ?
                     <Spin/> :
-                    <ProjectsTable projects={projects.projects}/>
+                    <ProjectsTable projects={projectsTable} columns={projectsTableColumns}/>
             }
 
+            <ProjectsTableSettings
+                isOpen={isSettingsTableOpen}
+                setIsOpen={setIsSettingsTableOpen}
+
+                tableColumns={projectsTableColumns}
+                setTableColumns={setProjectsTableColumns}
+            />
             <ParseModal isOpen={isParseModalOpen} setIsOpen={setIsParseModalOpen}/>
         </div>
     )

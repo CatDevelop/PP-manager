@@ -9,6 +9,7 @@ import RequestTagsCellEditor from "../RequestTagsCellEditor/RequestTagsCellEdito
 import {getAllTags} from "../../../../store/slices/tagsSlice";
 import parse from "html-react-parser";
 import RequestStudentsCountCellEditor from "../RequestStudentsCountCellEditor/RequestStudentsCountCellEditor";
+import RequestTrackCellEditor from "../RequestTrackCellEditor/RequestTrackCellEditor";
 
 const {Column, ColumnGroup} = Table;
 const {Paragraph} = Typography;
@@ -21,6 +22,7 @@ export default function RequestsTable(props) {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
+
 
     const tags = useTags()
 
@@ -92,7 +94,7 @@ export default function RequestsTable(props) {
             <Table
                 className={styles.table}
                 bordered={true}
-                dataSource={props.requests}
+                dataSource={props.isEdit ? props.editRequests : props.requests}
                 size="small"
                 scroll={{
                     y: "100%",
@@ -157,6 +159,30 @@ export default function RequestsTable(props) {
                                 {...getColumnSearchProps("status")}
                             />
 
+                        if (column.key === "track")
+                            return (
+                                <Column
+                                    title="Трек"
+                                    width={150}
+                                    dataIndex="track"
+                                    key="track"
+                                    render={(value, record) => {
+                                        return <RequestTrackCellEditor
+                                            isEdit={props.isEdit}
+                                            value={value}
+                                            tags={!tags.isLoading ? tags.tags : []}
+                                            request={record}
+                                            requests={props.defaultRequests.requests}
+                                        />
+                                    }}
+                                    filters={!tags.isLoading ? tags.tags.filter(tag => tag.is_track).map(tag => ({
+                                        text: tag.text,
+                                        value: tag.id
+                                    })) : []}
+                                    onFilter={(value, record) => record.track.find(t => t.id === value)}
+                                />
+                            )
+
                         if (column.key === "tags")
                             return (
                                 <Column
@@ -166,6 +192,7 @@ export default function RequestsTable(props) {
                                     key="tags"
                                     render={(value, record) => {
                                         return <RequestTagsCellEditor
+                                            isEdit={props.isEdit}
                                             value={value}
                                             tags={!tags.isLoading ? tags.tags : []}
                                             request={record}
@@ -281,6 +308,7 @@ export default function RequestsTable(props) {
                                     key="students_count"
                                     render={(value, record) => {
                                         return <RequestStudentsCountCellEditor
+                                            isEdit={props.isEdit}
                                             value={value}
                                             request={record}
                                             requests={props.defaultRequests.requests}

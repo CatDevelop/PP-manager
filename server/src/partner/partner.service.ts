@@ -1,4 +1,10 @@
-import {BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException} from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+    UnauthorizedException
+} from '@nestjs/common';
 import {ParsePassportsDto} from "./dto/parse-passports.dto";
 import {PassportService} from "../passport/passport.service";
 import {RequestService} from "../request/request.service";
@@ -25,6 +31,7 @@ const {htmlToText} = require('html-to-text');
 
 @Injectable()
 export class PartnerService {
+    private readonly logger = new Logger(PartnerService.name);
     constructor(
         private readonly passportService: PassportService,
         private readonly requestService: RequestService,
@@ -156,12 +163,17 @@ export class PartnerService {
 
         let period = await this.periodService.findOne(parsePassportsDto.period_id)
 
-        let pagesCount = await this.getPassportsPagesCount({...parsePassportsDto, semester: period.year + "-" + (period.term - 1)});
-        console.log("Pages count: ", pagesCount)
+        let {pagesCount, passportsCount} = await this.getPassportsPagesCount({...parsePassportsDto, semester: period.year + "-" + (period.term - 1)});
 
+        this.logger.log("Start parse passports from Partner {")
+        this.logger.log("\tPeriod: " + period.year + " " + period.term + "(id: " + period.id + ")")
+        this.logger.log("\tPages count: " + pagesCount)
+        this.logger.log("}")
 
+        let j = 1;
         for (let i = 1; i < (pagesCount + 1); i++) {
             try {
+                this.logger.log(`${i}/${pagesCount} pages`)
                 let currentPassportsResponse = await fetch(
                     "https://partner.urfu.ru/learning/request/?mode=projects&semester=" + period.year + "-" + (period.term - 1) + "&own=me&page=" + i,
                     requestOptions
@@ -175,15 +187,17 @@ export class PartnerService {
                         ...parsePassportsDto,
                         id: currentPassport.source?.id || currentPassport.id
                     })
-
+                    this.logger.log(`${j}/${passportsCount} passports`)
+                    j += 1;
+                    this.logger.log("Parse passport " + passport.id + " {")
                     if (!await this.customerCompanyService.isCreate(currentRequest.partner.id)) {
                         // Компании заказчика не существует
-                        console.log("Create customer company")
+                        this.logger.log("\tCreate customer company: (id:" + currentRequest.partner.id + ")")
                         await this.customerCompanyService.create(
                             CustomerCompanyMappers.partnerToCreateAndUpdateDto(currentRequest.partner)
                         )
                     } else {
-                        console.log("Update customer company")
+                        this.logger.log("\tUpdate customer company: (id:" + currentRequest.partner.id + ")")
                         await this.customerCompanyService.update(
                             currentRequest.partner.id,
                             CustomerCompanyMappers.partnerToCreateAndUpdateDto(currentRequest.partner)
@@ -192,12 +206,12 @@ export class PartnerService {
 
                     if (!await this.customerUserService.isCreate(currentRequest.manager.id)) {
                         // Заказчика не существует
-                        console.log("Create customer user")
+                        this.logger.log("\tCreate customer user: (id:" + currentRequest.manager.id + ")")
                         await this.customerUserService.create(
                             CustomerUserMappers.toCreateDto(currentRequest.manager)
                         )
                     } else {
-                        console.log("Update customer user")
+                        this.logger.log("\tUpdate customer user: (id:" + currentRequest.manager.id + ")")
                         await this.customerUserService.update(
                             currentRequest.manager.id,
                             CustomerUserMappers.toUpdateDto(currentRequest.manager)
@@ -206,12 +220,12 @@ export class PartnerService {
 
                     if (!await this.requestService.isCreate(currentRequest.id)) {
                         // Заявки не существует
-                        console.log("Create request")
+                        this.logger.log("\tCreate request: (id:" + currentRequest.id + ")")
                         await this.requestService.create(
                             RequestMappers.toCreateDto(currentRequest)
                         )
                     } else {
-                        console.log("Update request")
+                        this.logger.log("\tUpdate request: (id:" + currentRequest.id + ")")
                         await this.requestService.update(
                             currentRequest.id,
                             RequestMappers.toUpdateDto(currentRequest)
@@ -219,13 +233,13 @@ export class PartnerService {
                     }
 
                     if (!await this.passportService.isCreate(passport.id)) {
-                        console.log("Create passport")
                         // Паспорта не существует
+                        this.logger.log("\tCreate passport: (id:" + passport.id + ")")
                         await this.passportService.create(
                             PassportMappers.toCreateDto(currentPassport)
                         )
                     } else {
-                        console.log("Update passport")
+                        this.logger.log("\tUpdate passport: (id:" + currentPassport.id + ")")
                         await this.passportService.update(
                             currentPassport.id,
                             PassportMappers.toUpdateDto(currentPassport)
@@ -236,7 +250,7 @@ export class PartnerService {
                 throw new BadRequestException(error)
             }
         }
-        console.log("End of parse")
+        this.logger.log("End of parse passports")
     }
 
     async getRequestsPagesCount(getRequestsPagesCountDto: GetRequestsPagesCountDto): Promise<number> {
@@ -262,7 +276,7 @@ export class PartnerService {
         }
     }
 
-    async getPassportsPagesCount(getPassportsPagesCountDto: GetPassportsPagesCountDto): Promise<number> {
+    async getPassportsPagesCount(getPassportsPagesCountDto: GetPassportsPagesCountDto): Promise<{pagesCount: number, passportsCount: number}> {
         let myHeaders = new Headers();
         myHeaders.append("Cookie", "session-cookie=" + getPassportsPagesCountDto.session_cookie + ";key=" + getPassportsPagesCountDto.token);
 
@@ -279,7 +293,10 @@ export class PartnerService {
             )
             let pagesCountRequestJSON = await pagesCountRequest.json();
 
-            return pagesCountRequestJSON.pages.at(-1)[1] || 0;
+            return {
+                pagesCount: pagesCountRequestJSON.pages.at(-1)[1] || 0,
+                passportsCount: pagesCountRequestJSON.count
+            };
         } catch (error) {
             throw new InternalServerErrorException("Get pages count error: " + error)
         }
@@ -459,6 +476,81 @@ export class PartnerService {
 
         XLSX.utils.book_append_sheet(workbook, requestsSheet, 'Заявки');
         JS_XLSX.writeFile(workbook, 'Заявки.xlsx');
+        console.log("End of create report")
+    }
+
+    async createPassportReport() {
+        let passports = await this.passportService.findAll({
+            period_id: 8,
+        })
+        passports = passports.filter(passport => passport.is_visible)
+
+        let workbook = XLSX.utils.book_new();
+
+        let passportsSheet = {
+            '!ref': 'A1:K' + (passports.length + 1), // Sheet Range (Which cells will be included in the output)
+            'A1': {
+                t: 's',
+                v: 'Название',
+            },
+            'B1': {
+                t: 's',
+                v: 'Теги',
+            },
+            'C1': {
+                t: 's',
+                v: 'Курсы',
+            },
+            'D1': {
+                t: 's',
+                v: 'Цель',
+            },
+            'E1': {
+                t: 's',
+                v: 'Результат',
+            },
+            'F1': {
+                t: 's',
+                v: 'Описание',
+            },
+            'G1': {
+                t: 's',
+                v: 'Критерии оценивания',
+            },
+            'H1': {
+                t: 's',
+                v: 'Заказчик',
+            },
+            'I1': {
+                t: 's',
+                v: 'Представитель заказчика',
+            },
+            'J1': {
+                t: 's',
+                v: 'Максимальное количество команд',
+            },
+            'K1': {
+                t: 's',
+                v: 'Количество студентов в команде',
+            }
+        };
+
+        passports.forEach((passport, index) => {
+            passportsSheet["A" + (index + 2)] = {t: 's', v: passport.short_name || passport.request.name}
+            passportsSheet["B" + (index + 2)] = {t: 's', v: htmlToText(passport.request.tags.map(tag => tag.text).join('<br/>'))}
+            passportsSheet["C" + (index + 2)] = {t: 's', v: htmlToText(passport.course.map(course => course.number).join(', '))}
+            passportsSheet["D" + (index + 2)] = {t: 's', v: htmlToText(passport.request.goal)}
+            passportsSheet["E" + (index + 2)] = {t: 's', v: htmlToText(passport.request.result)}
+            passportsSheet["F" + (index + 2)] = {t: 's', v: htmlToText(passport.request.description)}
+            passportsSheet["G" + (index + 2)] = {t: 's', v: htmlToText(passport.request.criteria)}
+            passportsSheet["H" + (index + 2)] = {t: 's', v: passport.request.customer_user.customer_company.name}
+            passportsSheet["I" + (index + 2)] = {t: 's', v: (passport.request.customer_user.last_name || "") + " " + (passport.request.customer_user.first_name || "") + " " + (passport.request.customer_user.middle_name || "")}
+            passportsSheet["J" + (index + 2)] = {t: 's', v: passport.team_count}
+            passportsSheet["K" + (index + 2)] = {t: 's', v: passport.students_count}
+        })
+
+        XLSX.utils.book_append_sheet(workbook, passportsSheet, 'Проекты');
+        JS_XLSX.writeFile(workbook, 'Проекты.xlsx');
         console.log("End of create report")
     }
 }

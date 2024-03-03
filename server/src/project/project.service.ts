@@ -36,7 +36,7 @@ export class ProjectService {
             name: createProjectDto.project.title,
             students: createProjectDto.students.map(student => ({id: student})),
             curator: createProjectDto.project.mainCurator?.fullname || "",
-            period_id: createProjectDto.period_id,
+            period: {id: createProjectDto.period_id},
             // @ts-ignore
             isHaveReport: !!createProjectDto.documents.reportId,
             // @ts-ignore
@@ -74,6 +74,7 @@ export class ProjectService {
                 period: true,
                 passport: {
                     request: {
+                        track: true,
                         period_id: true,
                         tags: true,
                         customer_user: {
@@ -95,11 +96,12 @@ export class ProjectService {
             throw new NotFoundException("Project not found!")
 
         return await this.projectRepository.findOne({
-                where: {id},
+                where: {id: id, students: {projects_result: {project: {id: id}}}},
                 relations: {
                     period: true,
                     passport: {
                         request: {
+                            track: true,
                             period_id: true,
                             tags: true,
                             customer_user: {
@@ -107,7 +109,9 @@ export class ProjectService {
                             }
                         }
                     },
-                    students: true
+                    students: {
+                        projects_result: true
+                    }
                 }
             },
         )
@@ -141,7 +145,7 @@ export class ProjectService {
             passport: passport ? {id: passport.id} : undefined,
             name: updateProjectDto.project.title,
             // students: JSON.stringify(students),
-            curator: updateProjectDto.project.mainCurator.fullname,
+            curator: updateProjectDto.project.mainCurator?.fullname || "",
             period: {id: period.id},
             // @ts-ignore
             isHaveReport: !!updateProjectDto.documents.reportId,

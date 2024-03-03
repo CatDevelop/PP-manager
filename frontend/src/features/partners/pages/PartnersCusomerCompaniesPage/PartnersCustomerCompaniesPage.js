@@ -14,6 +14,7 @@ import {getAllCustomerCompanies} from "../../../../store/slices/customerCompanie
 import CustomerCompaniesTable from "../../components/CustomerCompaniesTable/CustomerCompaniesTable";
 import CustomerCompaniesTableSettings
     from "../../components/CustomerCompaniesTableSettings/CustomerCompaniesTableSettings";
+import {removeStudent} from "../../../../store/slices/studentSlice";
 
 export const initialCustomerCompaniesTableColumns = [
     {
@@ -78,6 +79,7 @@ export function PartnersCustomerCompaniesPage() {
 
     useEffect(() => {
         dispatch(removeProject())
+        dispatch(removeStudent())
     }, []);
 
     useEffect(() => {

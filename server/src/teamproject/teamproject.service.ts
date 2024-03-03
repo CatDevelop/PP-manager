@@ -7,6 +7,7 @@ import {ProjectService} from "../project/project.service";
 import {StudentService} from "../student/student.service";
 import {PeriodService} from "../period/period.service";
 import {ParseProjectDto} from "./dto/parse-project.dto";
+import {StudentProjectResultService} from "../student-project-results/student-project-result.service";
 
 const XLSX = require('xlsx');
 const JS_XLSX = require('js-xlsx');
@@ -20,6 +21,7 @@ export class TeamprojectService {
         private readonly projectRepository: Repository<Project>,
         private readonly projectService: ProjectService,
         private readonly studentService: StudentService,
+        private readonly studentProjectResultService: StudentProjectResultService,
         private readonly periodService: PeriodService
     ) {
     }
@@ -75,7 +77,10 @@ export class TeamprojectService {
 
         this.logger.log("Parse project " + parseProjectDto.id + " {")
         let details = {}
-        let results = {}
+        let results = {
+            thematicGroups: undefined,
+            expertsScore: undefined
+        }
         let documents = {}
         let team = {}
 
@@ -101,12 +106,12 @@ export class TeamprojectService {
             .catch(error => console.log('error', error));
 
         let students = []
+        let studentsResults = []
         // @ts-ignore
         for (const thematicGroup of team.thematicGroups) {
             for (const student of thematicGroup.students) {
                 if (student) {
                     if (!await this.studentService.isCreate(student.userId)) {
-                        this.logger.log("\tCreate student: (id:" + student.userId + ")")
                         await this.studentService.create(
                             {
                                 id: student.userId,
@@ -116,8 +121,8 @@ export class TeamprojectService {
                                 groupName: student.groupName,
                             }
                         )
+                        this.logger.log("\tCreate student: (id:" + student.userId + ")")
                     } else {
-                        this.logger.log("\tUpdate student: (id:" + student.userId + ")")
                         await this.studentService.update(
                             student.userId,
                             {
@@ -128,9 +133,23 @@ export class TeamprojectService {
                                 groupName: student.groupName,
                             }
                         )
+                        this.logger.log("\tUpdate student: (id:" + student.userId + ")")
                     }
 
                     students.push(student.userId)
+                    let studentResults;
+                    for (const resultsThematicGroup of results.thematicGroups) {
+                        for (const resultsStudent of resultsThematicGroup.students) {
+                            if(resultsStudent.fullname === student.fullname) {
+                                studentResults = resultsStudent
+                            }
+                        }
+                    }
+
+                    studentsResults.push({
+                        student,
+                        studentResults
+                    })
                 } else {
                     this.logger.error("Student not found")
                 }
@@ -171,6 +190,37 @@ export class TeamprojectService {
                 students
             })
         }
+
+        for(let studentResult of studentsResults) {
+            if(await this.studentProjectResultService.isCreateByIds(studentResult.student.userId, parseProjectDto.id)) {
+                await this.studentProjectResultService.update(
+                    studentResult.student.userId,
+                    parseProjectDto.id,
+                    {
+                        totalScore: studentResult.studentResults?.totalScore ?? undefined,
+                        expertsScore: studentResult.studentResults?.expertsScore ?? results.expertsScore ?? undefined,
+                        finalScore: studentResult.studentResults?.finalScore ?? undefined,
+                        retakedScore: studentResult.studentResults?.retakedScore ?? undefined,
+                        brsScore: studentResult.studentResults?.brsScore ?? undefined,
+                        coefficient: studentResult.studentResults?.coefficient ?? undefined,
+                    }
+                )
+                this.logger.log("\tUpdate student project result: (student:" + studentResult.student.userId + ", project: " + parseProjectDto.id + ")")
+            } else {
+                await this.studentProjectResultService.create({
+                    student_id: studentResult.student.userId,
+                    project_id: parseProjectDto.id,
+                    totalScore: studentResult.studentResults?.totalScore ?? undefined,
+                    expertsScore: studentResult.studentResults?.expertsScore ?? results.expertsScore ?? undefined,
+                    finalScore: studentResult.studentResults?.finalScore ?? undefined,
+                    retakedScore: studentResult.studentResults?.retakedScore ?? undefined,
+                    brsScore: studentResult.studentResults?.brsScore ?? undefined,
+                    coefficient: studentResult.studentResults?.coefficient ?? undefined,
+                })
+
+                this.logger.log("\tCreate student project result: (student:" + studentResult.student.userId + ", project: " + parseProjectDto.id + ")")
+            }
+        }
         this.logger.log("}")
     }
 
@@ -178,6 +228,20 @@ export class TeamprojectService {
         let projects = await this.projectRepository.find({
             where: {
                period: {id: 8}
+            },
+            relations: {
+                period: true,
+                passport: {
+                    request: {
+                        track: true,
+                        period_id: true,
+                        tags: true,
+                        customer_user: {
+                            customer_company: true
+                        }
+                    }
+                },
+                students: true
             }
         })
 
@@ -228,7 +292,7 @@ export class TeamprojectService {
                 })
             })
 
-            projectsSheet["A" + (index + 2)] = {t: 's', v: project.passport}
+            projectsSheet["A" + (index + 2)] = {t: 's', v: project.passport?.uid || ""}
             projectsSheet["B" + (index + 2)] = {t: 's', v: project.name}
             projectsSheet["C" + (index + 2)] = {t: 's', v: students.join('\n')}
             projectsSheet["D" + (index + 2)] = {t: 's', v: project.curator}
@@ -255,10 +319,10 @@ export class TeamprojectService {
                                 group: student.groupName,
                                 projectName: project.name,
                                 projectKey: project.id,
-                                curator: group.curator.fullname,
+                                curator: group.curator?.fullname || "",
                                 expertsScore: JSON.parse(project.results).expertsScore || "Нет оценки",
-                                finalScore: JSON.parse(project.results).thematicGroups[groupIndex].students[studentIndex].finalScore || "Нет оценки",
-                                retakedScore: JSON.parse(project.results).thematicGroups[groupIndex].students[studentIndex].retakedScore || "Не пересдавал",
+                                finalScore: JSON.parse(project.results)?.thematicGroups?.[groupIndex]?.students[studentIndex]?.finalScore || "Нет оценки",
+                                retakedScore: JSON.parse(project.results)?.thematicGroups?.[groupIndex]?.students[studentIndex]?.retakedScore || "Не пересдавал",
                             }
                         )
                 })

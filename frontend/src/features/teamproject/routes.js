@@ -2,8 +2,8 @@ import React from 'react';
 import MainLayout from "../../components/MainLayout/MainLayout";
 import {TeamprojectProjectsPage} from "./pages/TeamprojectProjectsPage";
 import {TeamprojectProjectPage} from "./pages/TeamprojectProjectPage";
-import {TeamprojectUsersPage} from "./pages/TeamprojectUsersPage";
-import {TeamprojectUserPage} from "./pages/TeamprojectUserPage";
+import {TeamprojectStudentsPage} from "./pages/TeamprojectStudentsPage";
+import {TeamprojectStudentPage} from "./pages/TeamprojectStudentPage";
 
 export const teamprojectRoutes = [
     {
@@ -17,15 +17,15 @@ export const teamprojectRoutes = [
                 path: 'teamproject/projects/:id',
                 element: <TeamprojectProjectPage/>
             },
-            //
-            // {
-            //     path: 'teamproject/users',
-            //     element: <TeamprojectUsersPage/>
-            // },
-            // {
-            //     path: 'teamproject/users/:id',
-            //     element: <TeamprojectUserPage/>
-            // },
+
+            {
+                path: 'teamproject/students',
+                element: <TeamprojectStudentsPage/>
+            },
+            {
+                path: 'teamproject/students/:id',
+                element: <TeamprojectStudentPage/>
+            },
         ]
     },
 ]

@@ -19,6 +19,7 @@ import { CustomerUserModule } from './customer-user/customer-user.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { TagModule } from './tag/tag.module';
 import { StudentModule } from './student/student.module';
+import { StudentProjectResultModule } from './student-project-results/student-project-result.module';
 
 @Module({
     imports: [
@@ -53,7 +54,8 @@ import { StudentModule } from './student/student.module';
         CustomerUserModule,
         AnalyticModule,
         TagModule,
-        StudentModule
+        StudentModule,
+        StudentProjectResultModule
     ],
     controllers: [AppController],
     providers: [AppService],

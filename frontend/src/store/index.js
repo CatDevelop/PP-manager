@@ -10,12 +10,16 @@ import analyticReducer from "./slices/analyticSlice";
 import customerCompaniesReducer from "./slices/customerCompaniesSlice";
 import customerUsersReducer from "./slices/customerUsersSlice";
 import tagsReducer from "./slices/tagsSlice";
+import studentsReducer from "./slices/studentsSlice";
+import periodsReducer from "./slices/periodsSlice";
+import studentReducer from "./slices/studentSlice";
 
 export const store = configureStore({
     reducer: {
         teamproject: teamprojectReducer,
         projects: projectsReducer,
         requests: requestsReducer,
+        students: studentsReducer,
         passports: passportsReducer,
         passport: passportReducer,
         project: projectReducer,
@@ -23,6 +27,8 @@ export const store = configureStore({
         analytic: analyticReducer,
         customerCompanies: customerCompaniesReducer,
         customerUsers: customerUsersReducer,
-        tags: tagsReducer
+        tags: tagsReducer,
+        periods: periodsReducer,
+        student: studentReducer,
     },
 });

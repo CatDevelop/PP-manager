@@ -13,6 +13,9 @@ export class Tag {
     @Column()
     color: string;
 
+    @Column({default: true})
+    is_track: boolean;
+
     @ManyToMany(() => Request, (request) => request.tags, {onDelete: "CASCADE"})
     requests: Request[]
 

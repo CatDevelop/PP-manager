@@ -96,14 +96,6 @@ export default function PassportsTable(props) {
                 </a>
             ),
         },
-        // {
-        //     key: '1',
-        //     label: (
-        //         <Link to={"/partners/passport/" + record.id}>
-        //             Перейти в PP-manager
-        //         </Link>
-        //     ),
-        // },
     ]
 
     const getRequestUidPassportDropdown = (value, record) => [
@@ -116,14 +108,6 @@ export default function PassportsTable(props) {
                 </a>
             ),
         },
-        // {
-        //     key: '1',
-        //     label: (
-        //         <Link to={"/partners/request/" + record.id}>
-        //             Перейти в PP-manager
-        //         </Link>
-        //     ),
-        // },
     ]
 
     return (

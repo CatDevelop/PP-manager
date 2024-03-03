@@ -41,7 +41,6 @@ export class RequestService {
             criteria: createRequestDto.criteria,
             max_copies: createRequestDto.max_copies,
             period_id: {id: createRequestDto.period_id},
-            // customer_company: {id: createRequestDto.customer_company_id}
             customer_user: {id: createRequestDto.customer_user_id}
         };
 
@@ -118,6 +117,7 @@ export class RequestService {
             //     updated_at: true
             // },
             relations: {
+                track: true,
                 tags: true,
                 passports: true,
                 period_id: true,

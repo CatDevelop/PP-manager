@@ -4,7 +4,8 @@ import {useDispatch} from "react-redux";
 import styles from "./RequestStudentsCountCellEditor.module.css"
 import {CheckCircleOutlined, EditOutlined} from "@ant-design/icons";
 import {updateRequest} from "../../../../store/slices/requestSlice";
-import {setRequests} from "../../../../store/slices/requestsSlice";
+import {setEditedRequests, setRequests} from "../../../../store/slices/requestsSlice";
+import {useRequests} from "../../../../hooks/use-requests";
 
 const {TextArea} = Input;
 const {Column, ColumnGroup} = Table;
@@ -15,17 +16,11 @@ export default function RequestStudentsCountCellEditor(props) {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(props.value)
-    const [isEdit, setIsEdit] = useState(false)
+    const requests = useRequests()
 
-    if (!isEdit) {
+    if (!props.isEdit) {
         return (
             <div className={styles.studentsCount__container}>
-                <Button
-                    icon={<EditOutlined/>}
-                    type="text"
-                    onClick={() => setIsEdit(true)}
-                    className={styles.studentsCount__editButton}
-                />
                 <p>{props.value}</p>
             </div>
         )
@@ -54,18 +49,22 @@ export default function RequestStudentsCountCellEditor(props) {
         }
     }
 
+    const editRequestStudentsCount = (value) => {
+        setInputValue(value)
+        const editedRequest = requests.editedRequests.find(editedRequest => editedRequest.id === props.request.id)
+        if (!editedRequest) {
+            dispatch(setEditedRequests([...requests.editedRequests, {id: props.request.id, students_count: value}]))
+        } else {
+            dispatch(setEditedRequests([...requests.editedRequests.filter(editedRequestFilter => editedRequestFilter.id !== editedRequest.id), {
+                ...editedRequest,
+                students_count: value
+            }]))
+        }
+    }
+
     return (
         <div className={styles.studentsCount__container}>
-            <Button
-                icon={<CheckCircleOutlined/>}
-                type="text"
-                onClick={() => {
-                    setIsEdit(false);
-                    saveRequest();
-                }}
-                className={styles.studentsCount__editButton}
-            />
-            <InputNumber value={inputValue} onChange={(value) => setInputValue(value)}/>
+            <InputNumber value={inputValue} onChange={(value) => editRequestStudentsCount(value)}/>
         </div>
     );
 };

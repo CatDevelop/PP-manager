@@ -1,6 +1,7 @@
-import {Column, Entity, ManyToMany, PrimaryColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToMany, OneToMany, PrimaryColumn} from "typeorm";
 import {Request} from "../../request/entities/request.entity";
 import {Project} from "../../project/entities/project.entity";
+import {StudentProjectResult} from "../../student-project-results/entities/student-project-result.entity";
 
 @Entity()
 export class Student {
@@ -21,4 +22,7 @@ export class Student {
 
     @ManyToMany(() => Project, (project) => project.students, {onDelete: "CASCADE"})
     projects: Project[]
+
+    @OneToMany(() => StudentProjectResult, (studentProjectResult) => studentProjectResult.student, {nullable: true})
+    projects_result: StudentProjectResult[]
 }

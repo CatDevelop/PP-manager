@@ -13,9 +13,9 @@ export class StudentController {
         return this.studentService.create(createStudentDto);
     }
 
-    @Get()
-    findAll() {
-        return this.studentService.findAll();
+    @Get('all/:period_id')
+    findAll(@Param('period_id', ParseIntPipe) period_id: number) {
+        return this.studentService.findAll({period_id});
     }
 
     @Get(':id')

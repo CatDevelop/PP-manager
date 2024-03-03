@@ -9,10 +9,11 @@ import {getAllPassports} from "../../../../store/slices/passportsSlice";
 import {usePassports} from "../../../../hooks/use-passports";
 import PassportsTable from "../../components/PassportsTable/PassportsTable";
 import PassportsTableSettings from "../../components/PassportsTableSettings/PassportsTableSettings";
-import PassportSettings from "../../components/PassportSettings/PassportSettings";
 import {removePassport} from "../../../../store/slices/passportSlice";
-import {removeProjects} from "../../../../store/slices/projectsSlice";
 import {removeRequests} from "../../../../store/slices/requestsSlice";
+import {removeStudent} from "../../../../store/slices/studentSlice";
+import {getAllPeriods} from "../../../../store/slices/periodsSlice";
+import {usePeriods} from "../../../../hooks/use-periods";
 
 export const initialPassportsTableColumns = [
     {
@@ -101,7 +102,7 @@ export function PartnersPassportsPage() {
     )
 
     const [year, setYear] = useState(2023)
-    const [term, setTerm] = useState(1)
+    const [term, setTerm] = useState(2)
 
     const handleChangeYear = (value) => {
         setYear(value)
@@ -112,17 +113,20 @@ export function PartnersPassportsPage() {
     }
 
     const passports = usePassports()
+    const periods = usePeriods()
 
     useEffect(() => {
-        if(!isPassportEditOpen) {
-            dispatch(getAllPassports({period_id: 8}))
+        if (!isPassportEditOpen && !periods.isLoading) {
+            dispatch(getAllPassports({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
             dispatch(removePassport())
         }
-    }, [year, term, isPassportEditOpen]);
+    }, [year, term, isPassportEditOpen, periods]);
 
     useEffect(() => {
+        dispatch(getAllPeriods())
         dispatch(removeProject())
         dispatch(removeRequests())
+        dispatch(removeStudent())
     }, []);
 
     useEffect(() => {
@@ -170,14 +174,11 @@ export function PartnersPassportsPage() {
                     <Select
                         defaultValue={2023}
                         onChange={handleChangeYear}
-                        options={[
-                            {value: 2023, label: '2023/2024'},
-                            {value: 2022, label: '2022/2023'},
-                            {value: 2021, label: '2021/2022'},
-                            {value: 2020, label: '2020/2021'},
-                            {value: 2019, label: '2019/2020'},
-                            {value: 2018, label: '2018/2019'},
-                        ]}
+                        options={
+                            [...new Set(periods.periods.map(period => period.year))].map(year => ({
+                                value: year, label: `${year}/${year + 1}`
+                            }))
+                        }
                     />
 
                     <Select

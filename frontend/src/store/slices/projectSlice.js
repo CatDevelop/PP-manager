@@ -7,7 +7,7 @@ export const getProject = createAsyncThunk(
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
-                `${API.GET_PROJECTS}/${data.id}`,
+                `${API.GET_PROJECT}/${data.id}`,
                 {
                     method: 'get',
                     headers: {

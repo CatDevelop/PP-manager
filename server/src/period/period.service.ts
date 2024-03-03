@@ -21,6 +21,12 @@ export class PeriodService {
         await this.periodRepository.save(createPeriodDto);
     }
 
+    async findAll() {
+        const periods = await this.periodRepository.find({order: {year: "ASC", term: "ASC"}})
+
+        return periods
+    }
+
     async findOne(id: number) {
         const period = await this.periodRepository.findOneBy({id})
 

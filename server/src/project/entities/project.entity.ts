@@ -1,18 +1,19 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn,
+    Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryColumn,
     UpdateDateColumn
 } from "typeorm";
-import {Tag} from "../../tag/entities/tag.entity";
 import {Student} from "../../student/entities/student.entity";
 import {Passport} from "../../passport/entities/passport.entity";
-import {CustomerUser} from "../../customer-user/entities/customer-user.entity";
 import {Period} from "../../period/entities/period.entity";
+import {StudentProjectResult} from "../../student-project-results/entities/student-project-result.entity";
 
 @Entity()
 export class Project {
@@ -75,5 +76,8 @@ export class Project {
 
     @ManyToOne(() => Period, (period) => period.projects, {nullable: true})
     @JoinColumn({ name: 'period'})
-    period: Period
+    period: Period;
+
+    @OneToMany(() => StudentProjectResult, (studentProjectResult) => studentProjectResult.project, {nullable: true})
+    students_result: StudentProjectResult[];
 }

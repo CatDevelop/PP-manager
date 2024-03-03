@@ -9,6 +9,7 @@ import {getAllCustomerUsers} from "../../../../store/slices/customerUsersSlice";
 import {useCustomerUsers} from "../../../../hooks/use-customer-users";
 import CustomerUsersTableSettings from "../../components/CustomerUsersTableSettings/CustomerUsersTableSettings";
 import CustomerUsersTable from "../../components/CustomerUsersTable/CustomerUsersTable";
+import {removeStudent} from "../../../../store/slices/studentSlice";
 
 export const initialCustomerUsersTableColumns = [
     {
@@ -69,6 +70,7 @@ export function PartnersCustomerUsersPage() {
 
     useEffect(() => {
         dispatch(removeProject())
+        dispatch(removeStudent())
     }, []);
 
     useEffect(() => {
