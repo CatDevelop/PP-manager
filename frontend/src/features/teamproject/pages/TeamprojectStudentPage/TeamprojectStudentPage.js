@@ -71,13 +71,13 @@ export function TeamprojectStudentPage() {
                 {
                     student.student.projects.toSorted((a, b) => {
                         if(a.period.year < b.period.year)
-                            return -1
+                            return 1
                         if(a.period.year > b.period.year)
-                            return 1
-                        if(a.period.term < b.period.term)
                             return -1
-                        if(a.period.term > b.period.term)
+                        if(a.period.term < b.period.term)
                             return 1
+                        if(a.period.term > b.period.term)
+                            return -1
                         return 0
                     }).map(project => {
                         return <ProjectDescription project={project} type="student"/>
