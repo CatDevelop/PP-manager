@@ -36,8 +36,7 @@ export function TeamprojectStudentPage() {
             <SideBar selectedKeys={["TeamprojectStudents"]}/>
             <Breadcrumb items={[
                 {
-                    title: <Link to={"/teamproject/students"}><ArrowLeftOutlined/> Назад</Link>,
-
+                    title: <a onClick={() => navigate(-1) || navigate("/teamproject/students")}><ArrowLeftOutlined/> Назад</a>//<Link to={"/teamproject/students"}><ArrowLeftOutlined/> Назад</Link>,
                 }
             ]}/>
 
