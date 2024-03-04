@@ -25,11 +25,17 @@ export class StudentProjectResult {
     @Column('decimal', { precision: 6, scale: 2, nullable: true})
     coefficient: number;
 
+    @Column({ nullable: true })
+    projectId: number;
+
+    @Column({ nullable: true })
+    studentId: number;
+
     @ManyToOne(() => Project, (project) => project.id, {nullable: true})
-    @JoinColumn({ name: 'project'})
+    @JoinColumn({ name: 'projectId'})
     project: Project;
 
     @ManyToOne(() => Student, (student) => student.id, {nullable: true})
-    @JoinColumn({ name: 'student'})
+    @JoinColumn({ name: 'studentId'})
     student: Student;
 }

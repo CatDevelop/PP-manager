@@ -106,7 +106,7 @@ export function TeamprojectStudentsPage() {
 
     useEffect(() => {
         setStudentsTable(students.students.map(student => {
-            const projectResults = student.projects_result.find(result => result.project.id === student.projects[0]?.id)
+            const projectResults = student.projects[0]?.students_result.find(result => result.studentId === student.id)
             return {
                 id: student.id,
                 fullname: student.fullname,

@@ -38,20 +38,8 @@ export class StudentService {
 
     async findAll(findAllStudentsDto: FindAllStudentsDto) {
         const students = await this.studentRepository.find({
-            where: {projects: {passport: {request: {period_id: {id: findAllStudentsDto.period_id}}}}},
+            where: {projects: {period: {id: findAllStudentsDto.period_id}}},
             select: {
-                projects_result: {
-                    id: true,
-                    totalScore: true,
-                    expertsScore: true,
-                    finalScore: true,
-                    retakedScore: true,
-                    brsScore: true,
-                    coefficient: true,
-                    project: {
-                        id: true
-                    }
-                },
                 projects: {
                     id: true,
                     name: true,
@@ -63,9 +51,7 @@ export class StudentService {
                 }
             },
             relations: {
-                projects_result: {
-                    project: true
-                },
+                // projects_result: true,
                 projects: {
                     period: true,
                     passport: {
@@ -73,6 +59,7 @@ export class StudentService {
                             period_id: true
                         }
                     },
+                    students_result: true
                 }
             }
         })
@@ -100,11 +87,8 @@ export class StudentService {
                 }
             },
             relations: {
-                // projects_result: true,
                 projects: {
-                    students_result: {
-                        student: true
-                    },
+                    students_result: true,
                     period: true,
                     passport: {
                         request: {
@@ -117,6 +101,7 @@ export class StudentService {
                     },
                 }
             },
+
         })
 
         return student
