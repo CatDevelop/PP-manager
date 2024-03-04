@@ -97,6 +97,17 @@ export class ProjectService {
 
         return await this.projectRepository.findOne({
                 where: {id: id, students: {projects_result: {project: {id: id}}}},
+                select: {
+                    id: true,
+                    name: true,
+                    students: true,
+                    curator: true,
+                    isHaveReport: true,
+                    isHavePresentation: true,
+                    comissionScore: true,
+                    status: true,
+                    updated_at: true
+                },
                 relations: {
                     period: true,
                     passport: {

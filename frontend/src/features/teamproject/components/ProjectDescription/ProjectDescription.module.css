@@ -68,3 +68,10 @@
     gap: 5px;
     justify-content: end;
 }
+
+.project__content__right__badges {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: end;
+}

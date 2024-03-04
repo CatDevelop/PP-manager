@@ -1,14 +1,13 @@
 import SideBar from "../../../../components/SideBar/SideBar";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {useDispatch} from "react-redux";
-import {App, Breadcrumb, Descriptions, Spin, Tag, Typography} from "antd";
-import {useTeamproject} from "../../../../hooks/use-teamproject";
-import {ArrowLeftOutlined, FundProjectionScreenOutlined, UserOutlined} from "@ant-design/icons";
+import {App, Breadcrumb, Spin, Tag, Typography} from "antd";
+import {ArrowLeftOutlined} from "@ant-design/icons";
 import styles from "./TeamprojectStudentPage.module.css"
 import React, {useEffect} from "react";
 import {getStudent} from "../../../../store/slices/studentSlice";
 import {useStudent} from "../../../../hooks/use-student";
-import StudentProjectDescription from "../../components/StudentProjectDescription/StudentProjectDescription";
+import ProjectDescription from "../../components/ProjectDescription/ProjectDescription";
 
 const {Title} = Typography;
 
@@ -82,7 +81,7 @@ export function TeamprojectStudentPage() {
                             return 1
                         return 0
                     }).map(project => {
-                        return <StudentProjectDescription project={project}/>
+                        return <ProjectDescription project={project} type="student"/>
                     })
                 }
             </div>

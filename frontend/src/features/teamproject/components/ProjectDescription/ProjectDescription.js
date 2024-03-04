@@ -1,19 +1,90 @@
 import React from 'react';
-import {App, Card, Collapse, Descriptions, Input, Statistic, Tag} from "antd";
+import {App, Card, Collapse, Descriptions, Dropdown, Input, Statistic, Tag} from "antd";
 import {useDispatch} from "react-redux";
-import styles from "./StudentProjectDescription.module.css"
+import styles from "./ProjectDescription.module.css"
+import {Link} from "react-router-dom";
 
 const {TextArea} = Input;
 
-export default function StudentProjectDescription(props) {
+export default function ProjectDescription(props) {
     const {message} = App.useApp();
     const dispatch = useDispatch();
+
+    const getProjectRequestDropdown = (value, record) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank" href={"https://teamproject.urfu.ru/#/" + record.id + "/about"}>
+                    Перейти к проекту в Teamproject
+                </a>
+            ),
+        },
+        {
+            key: '1',
+            label: (
+                <Link to={record.id}>
+                    Перейти к проекту в PP-manager
+                </Link>
+            ),
+        },
+    ]
+
+    const getProjectNameDropdown = (projectId) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank" href={"https://teamproject.urfu.ru/#/" + projectId + "/about"}>
+                    Перейти к проекту в Teamproject
+                </a>
+            ),
+        },
+        props.type === 'student' ? {
+            key: '1',
+            label: (
+                <Link to={"/teamproject/projects/" + projectId}>
+                    Перейти к проекту в PP-manager
+                </Link>
+            ),
+        } : undefined
+    ]
+
+    const getPassportUidDropdown = (passportId) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank" href={"https://partner.urfu.ru/ptraining/services/learning/#/passport/" + passportId}>
+                    Перейти к паспорту в ЛКП
+                </a>
+            ),
+        },
+    ]
+
+    const getRequestUidDropdown = (requestId) => [
+        {
+            key: '0',
+            label: (
+                <a target="_blank"
+                   href={"https://partner.urfu.ru/ptraining/services/learning/#/requests/" + requestId}>
+                    Перейти к заявке в ЛКП
+                </a>
+            ),
+        },
+    ]
 
     return (
         <Card
             title={(
                 <div className={styles.title}>
-                    <p className={styles.title__name}>{props.project.name}</p>
+                    <Dropdown
+                        trigger={['click']}
+                        menu={{
+                            items: getProjectNameDropdown(props.project.id),
+                        }}
+                    >
+                        <a onClick={(e) => e.preventDefault()} className={styles.title__name}>
+                            {props.project.name}
+                        </a>
+                    </Dropdown>
                     <p className={styles.title__period}>{props.project.period.term === 1 ? "Осенний" : "Весенний"} семестр {props.project.period.year}/{props.project.period.year + 1}</p>
                 </div>
             )}
@@ -25,12 +96,32 @@ export default function StudentProjectDescription(props) {
                     <div className={styles.project__content__info__row}>
                         <p >
                             <p className={styles.project__content__info__title}>Заявка</p>
-                            {props.project.passport.request.uid} <br/>
+                            <Dropdown
+                                trigger={['click']}
+                                menu={{
+                                    items: getRequestUidDropdown(props.project.passport.request.id),
+                                }}
+                            >
+                                <a onClick={(e) => e.preventDefault()}>
+                                    {props.project.passport.request.uid}
+                                </a>
+                            </Dropdown>
+                            <br/>
                             от {new Date(Date.parse(props.project.passport.request.date)).toLocaleDateString()}
                         </p>
                         <p >
                             <p className={styles.project__content__info__title}>Паспорт</p>
-                            {props.project.passport.uid} <br/>
+                            <Dropdown
+                                trigger={['click']}
+                                menu={{
+                                    items: getPassportUidDropdown(props.project.passport.id),
+                                }}
+                            >
+                                <a onClick={(e) => e.preventDefault()}>
+                                    {props.project.passport.uid}
+                                </a>
+                            </Dropdown>
+                            <br/>
                             от {new Date(Date.parse(props.project.passport.date)).toLocaleDateString()}
                         </p>
                         <p >
@@ -81,6 +172,20 @@ export default function StudentProjectDescription(props) {
                     </div>
                 </div>
                 <div className={styles.project__content__right}>
+                    <div className={styles.project__content__right__badges}>
+                        <Tag color={props.project.status === "Завершённый" ? "gray" : "green"} style={{margin: 0}}>
+                            {props.project.status}
+                        </Tag>
+                        <Tag color={props.project.isHaveReport ? "green" : "red"} style={{margin: 0}}>
+                            {props.project.isHaveReport ? "Есть отчёт" : "Нет отчёта"}
+                        </Tag>
+                        <Tag color={props.project.isHavePresentation ? "green" : "red"} style={{margin: 0}}>
+                            {props.project.isHavePresentation ? "Есть презентация" : "Нет презентации"}
+                        </Tag>
+                        <Tag color={props.project.comissionScore !== null ? "green" : "red"} style={{margin: 0}}>
+                            {props.project.comissionScore !== null ? "Есть оценка комиссии" : "Нет оценки комиссии"}
+                        </Tag>
+                    </div>
                     {
                         props.project.passport.request.tags.length !== 0 &&
                         <div className={styles.project__content__right__tags}>
@@ -92,7 +197,7 @@ export default function StudentProjectDescription(props) {
                         </div>
                     }
                     {
-                        props.project.students_result?.[0]?.expertsScore &&
+                        props.type === "student" && props.project.students_result?.[0]?.expertsScore &&
                         <Statistic
                             title="Сводная оценка экспертной комиссии"
                             value={
@@ -100,9 +205,8 @@ export default function StudentProjectDescription(props) {
                             }
                         />
                     }
-
                     {
-                        props.project.students_result?.[0]?.retakedScore &&
+                        props.type === "student" && props.project.students_result?.[0]?.retakedScore &&
                         <Statistic
                             title="Пересдача"
                             value={props.project.students_result?.[0]?.retakedScore}

@@ -86,6 +86,19 @@ export class StudentService {
 
         const student = await this.studentRepository.findOne({
             where: {id: findOneStudentDto.id, projects: {students_result: {student: {id: findOneStudentDto.id}}}},
+            select: {
+                projects: {
+                    id: true,
+                    name: true,
+                    curator: true,
+                    isHaveReport: true,
+                    isHavePresentation: true,
+                    comissionScore: true,
+                    status: true,
+                    // documents: true,
+                    students_result: true,
+                }
+            },
             relations: {
                 // projects_result: true,
                 projects: {
