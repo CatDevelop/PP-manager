@@ -14,6 +14,7 @@ import {useStudents} from "../../../../hooks/use-students";
 import {usePeriods} from "../../../../hooks/use-periods";
 import {getAllPeriods} from "../../../../store/slices/periodsSlice";
 import {removeStudent} from "../../../../store/slices/studentSlice";
+import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
 
 export const initialStudentsTableColumns = [
     {
@@ -93,11 +94,13 @@ export function TeamprojectStudentsPage() {
         dispatch(removeStudents())
         if (!periods.isLoading) {
             dispatch(getAllStudents({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+                .catch((error) => unauthorizedHandler(error, dispatch, message))
         }
     }, [year, term, periods]);
 
     useEffect(() => {
         dispatch(getAllPeriods())
+            .catch((error) => unauthorizedHandler(error, dispatch, message))
         dispatch(removePassport())
         dispatch(removeProject())
         dispatch(removeRequests())

@@ -13,6 +13,8 @@ import ProjectsTableSettings from "../../components/ProjectsTableSettings/Projec
 import {removeStudent} from "../../../../store/slices/studentSlice";
 import {usePeriods} from "../../../../hooks/use-periods";
 import {getAllPeriods} from "../../../../store/slices/periodsSlice";
+import {removeAuth} from "../../../../store/slices/authSlice";
+import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
 
 export const initialProjectsTableColumns = [
     {
@@ -81,11 +83,13 @@ export function TeamprojectProjectsPage() {
     useEffect(() => {
         if (!periods.isLoading) {
             dispatch(getAllProjects({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+                .catch((error) => unauthorizedHandler(error, dispatch, message))
         }
     }, [year, term, periods]);
 
     useEffect(() => {
         dispatch(getAllPeriods())
+            .catch((error) => unauthorizedHandler(error, dispatch, message))
         dispatch(removeProject())
         dispatch(removeStudent())
     }, []);

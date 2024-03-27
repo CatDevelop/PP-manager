@@ -10,6 +10,7 @@ import {useCustomerUsers} from "../../../../hooks/use-customer-users";
 import CustomerUsersTableSettings from "../../components/CustomerUsersTableSettings/CustomerUsersTableSettings";
 import CustomerUsersTable from "../../components/CustomerUsersTable/CustomerUsersTable";
 import {removeStudent} from "../../../../store/slices/studentSlice";
+import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
 
 export const initialCustomerUsersTableColumns = [
     {
@@ -66,6 +67,7 @@ export function PartnersCustomerUsersPage() {
 
     useEffect(() => {
         dispatch(getAllCustomerUsers({period_id: 8}))
+            .catch((error) => unauthorizedHandler(error, dispatch, message))
     }, [year, term]);
 
     useEffect(() => {

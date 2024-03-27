@@ -14,6 +14,7 @@ import {removeRequests} from "../../../../store/slices/requestsSlice";
 import {removeStudent} from "../../../../store/slices/studentSlice";
 import {getAllPeriods} from "../../../../store/slices/periodsSlice";
 import {usePeriods} from "../../../../hooks/use-periods";
+import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
 
 export const initialPassportsTableColumns = [
     {
@@ -118,12 +119,14 @@ export function PartnersPassportsPage() {
     useEffect(() => {
         if (!isPassportEditOpen && !periods.isLoading) {
             dispatch(getAllPassports({period_id: periods.periods.find(period => period.year === year && period.term === term).id}))
+                .catch((error) => unauthorizedHandler(error, dispatch, message))
             dispatch(removePassport())
         }
     }, [year, term, isPassportEditOpen, periods]);
 
     useEffect(() => {
         dispatch(getAllPeriods())
+            .catch((error) => unauthorizedHandler(error, dispatch, message))
         dispatch(removeProject())
         dispatch(removeRequests())
         dispatch(removeStudent())
