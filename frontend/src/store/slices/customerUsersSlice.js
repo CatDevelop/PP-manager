@@ -16,6 +16,8 @@ export const getAllCustomerUsers = createAsyncThunk(
             );
 
             if (!response.ok) {
+                if(response.status === 401)
+                    throw new Error("Не авторизован!");
                 throw new Error("Ошибка сервера!");
             }
 

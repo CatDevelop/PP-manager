@@ -15,6 +15,7 @@ import CustomerCompaniesTable from "../../components/CustomerCompaniesTable/Cust
 import CustomerCompaniesTableSettings
     from "../../components/CustomerCompaniesTableSettings/CustomerCompaniesTableSettings";
 import {removeStudent} from "../../../../store/slices/studentSlice";
+import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
 
 export const initialCustomerCompaniesTableColumns = [
     {
@@ -75,6 +76,8 @@ export function PartnersCustomerCompaniesPage() {
 
     useEffect(() => {
         dispatch(getAllCustomerCompanies({period_id: 8}))
+            .catch((error) => unauthorizedHandler(error, dispatch, message))
+
     }, [year, term]);
 
     useEffect(() => {
