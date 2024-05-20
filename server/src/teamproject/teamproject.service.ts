@@ -41,7 +41,7 @@ export class TeamprojectService {
         let period = await this.periodService.findOne(parseProjectsDto.period_id)
 
         let localProjects = await fetch(
-            "https://teamproject.urfu.ru/api/v2/workspaces?status=any&year=" + period.year + "&semester=" + period.term + "&size=10000&page=1", requestOptions)
+            "http://89.208.216.16/process_comments" + period.year + "&semester=" + period.term + "&size=10000&page=1", requestOptions)
             .then(response => response.json())
             .then(result => result)
             .catch(error => {

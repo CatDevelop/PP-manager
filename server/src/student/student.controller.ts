@@ -1,7 +1,8 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query} from '@nestjs/common';
 import {StudentService} from './student.service';
 import {CreateStudentDto} from './dto/create-student.dto';
 import {UpdateStudentDto} from './dto/update-student.dto';
+import {FindAllStudentsDto} from "./dto/find-all-students.dto";
 
 @Controller('student')
 export class StudentController {
@@ -14,8 +15,13 @@ export class StudentController {
     }
 
     @Get('all/:period_id')
-    findAll(@Param('period_id', ParseIntPipe) period_id: number) {
-        return this.studentService.findAll({period_id});
+    findAll(
+        @Param('period_id', ParseIntPipe) period_id: number,
+        @Query('page') page: number,
+        @Query('itemCountOnPage') itemCountOnPage  : number,
+        @Body() body: { options: any }
+    ) {
+        return this.studentService.findAll({period_id, page, itemCountOnPage, options: body.options});
     }
 
     @Get(':id')

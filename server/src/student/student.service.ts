@@ -37,8 +37,18 @@ export class StudentService {
     }
 
     async findAll(findAllStudentsDto: FindAllStudentsDto) {
+        console.log(findAllStudentsDto.options)
+
+        const where = {
+            projects: {period: {id: findAllStudentsDto.period_id}},
+        }
+
+        const studentsCount = await this.studentRepository.countBy({projects: {period: {id: findAllStudentsDto.period_id}}})
         const students = await this.studentRepository.find({
             where: {projects: {period: {id: findAllStudentsDto.period_id}}},
+            take: findAllStudentsDto.itemCountOnPage,
+            skip: (findAllStudentsDto.page - 1) * findAllStudentsDto.itemCountOnPage,
+            order: {id: "asc"},
             select: {
                 projects: {
                     id: true,
@@ -48,7 +58,7 @@ export class StudentService {
                     isHavePresentation: true,
                     comissionScore: true,
                     status: true,
-                }
+                },
             },
             relations: {
                 // projects_result: true,
@@ -64,7 +74,7 @@ export class StudentService {
             }
         })
 
-        return students
+        return {students, meta: {studentsCount, pageCount: Math.ceil(studentsCount / findAllStudentsDto.itemCountOnPage)}}
     }
 
     async findOne(findOneStudentDto: FindOneStudentDto) {
