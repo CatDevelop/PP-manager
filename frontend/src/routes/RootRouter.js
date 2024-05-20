@@ -7,6 +7,7 @@ import AuthGuard from "./guards/authGuard";
 import {partnersRoutes} from "../features/partners/routes";
 import {analyticRoutes} from "../features/analytics/routes";
 import {settingsRoutes} from "../features/settings/routes";
+import {questionsRoutes} from "../features/questions/routes";
 
 const routes = [
     {
@@ -22,6 +23,7 @@ const routes = [
             ...teamprojectRoutes,
             ...partnersRoutes,
             ...analyticRoutes,
+            ...questionsRoutes,
             ...settingsRoutes
         ]
     }

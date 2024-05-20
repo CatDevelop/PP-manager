@@ -20,6 +20,8 @@ import { AnalyticModule } from './analytic/analytic.module';
 import { TagModule } from './tag/tag.module';
 import { StudentModule } from './student/student.module';
 import { StudentProjectResultModule } from './student-project-results/student-project-result.module';
+import { QuestionModule } from './question/question.module';
+import { QuestionSectionModule } from './question-section/question-section.module';
 
 @Module({
     imports: [
@@ -55,7 +57,9 @@ import { StudentProjectResultModule } from './student-project-results/student-pr
         AnalyticModule,
         TagModule,
         StudentModule,
-        StudentProjectResultModule
+        StudentProjectResultModule,
+        QuestionModule,
+        QuestionSectionModule
     ],
     controllers: [AppController],
     providers: [AppService],

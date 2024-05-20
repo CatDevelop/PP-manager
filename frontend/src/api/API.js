@@ -13,6 +13,10 @@ const GET_PASSPORT = `${HOST}/passport`;
 const GET_REQUESTS = `${HOST}/request/all`;
 const GET_STUDENTS = `${HOST}/student/all`;
 const GET_STUDENT = `${HOST}/student`;
+const GET_QUESTIONS = `${HOST}/question`;
+const GET_QUESTION_SECTIONS = `${HOST}/question-section`;
+const REMOVE_QUESTION = `${HOST}/question`;
+const CREATE_QUESTION = `${HOST}/question`;
 const GET_CUSTOMER_COMPANIES = `${HOST}/customer-company/all`;
 const GET_CUSTOMER_USERS = `${HOST}/customer-user/all`;
 const GET_MAIN_ANALYTICS = `${HOST}/analytic/main`;
@@ -38,7 +42,11 @@ const API = {
     GET_PASSPORT,
     UPDATE_REQUEST,
     UPDATE_PASSPORT,
-    GET_PROJECT
+    GET_PROJECT,
+    GET_QUESTIONS,
+    REMOVE_QUESTION,
+    CREATE_QUESTION,
+    GET_QUESTION_SECTIONS
 };
 
 export default API;

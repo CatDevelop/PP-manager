@@ -13,13 +13,17 @@ import tagsReducer from "./slices/tagsSlice";
 import studentsReducer from "./slices/studentsSlice";
 import periodsReducer from "./slices/periodsSlice";
 import studentReducer from "./slices/studentSlice";
+import questionsReducer from "./slices/questionsSlice";
+import questionSectionsReducer from "./slices/questionSectionsSlice";
 
 export const store = configureStore({
     reducer: {
         teamproject: teamprojectReducer,
         projects: projectsReducer,
+        questionSections: questionSectionsReducer,
         requests: requestsReducer,
         students: studentsReducer,
+        questions: questionsReducer,
         passports: passportsReducer,
         passport: passportReducer,
         project: projectReducer,

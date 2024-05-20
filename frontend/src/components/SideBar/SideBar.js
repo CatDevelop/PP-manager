@@ -5,7 +5,7 @@ import {
     FileProtectOutlined,
     FundProjectionScreenOutlined,
     LineChartOutlined,
-    LogoutOutlined, RobotOutlined, SettingOutlined, UserOutlined
+    LogoutOutlined, QuestionCircleOutlined, RobotOutlined, SettingOutlined, UserOutlined
 } from "@ant-design/icons";
 import styles from './SideBar.module.css';
 import {useCallback} from "react";
@@ -35,6 +35,7 @@ export default function SideBar(props) {
         getItem('Заказчики', 'PartnersCustomerCompanies', <BankOutlined />),
         getItem('Представители', 'PartnersCustomerUsers', <RobotOutlined />),
         getItem('Аналитика', 'Analytic', <LineChartOutlined />),
+        getItem('Q&A', 'Q&A', <QuestionCircleOutlined />),
     ];
     const bottomMenu = [
         // getItem('Настройки', 'Settings', <SettingOutlined/>),
@@ -66,6 +67,9 @@ export default function SideBar(props) {
                 break
             case 'Analytic':
                 navigate('/analytic')
+                break
+            case 'Q&A':
+                navigate('/question')
                 break
             case 'Settings':
                 navigate('/settings')
