@@ -2,9 +2,11 @@ import React, {useRef, useState} from 'react';
 import {App, Button, Input, Space, Table, Typography} from "antd";
 import {useDispatch} from "react-redux";
 import styles from "./RequestsTable.module.css"
-import {DeleteOutlined, EditOutlined, SearchOutlined} from "@ant-design/icons";
+import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {removeQuestion} from "../../../../store/slices/questionsSlice";
 import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
+import remarkGfm from "remark-gfm";
+import Markdown from "react-markdown";
 
 const {Column, ColumnGroup} = Table;
 const {Paragraph} = Typography;
@@ -127,6 +129,11 @@ export default function QuestionsTable(props) {
                                 width={400}
                                 dataIndex="answer"
                                 key="answer"
+                                render={(value) => {
+                                    return <Markdown remarkPlugins={[[remarkGfm, {singleTilde: false}]]}>
+                                        {value}
+                                    </Markdown>
+                                }}
                             />
                     })
                 }
