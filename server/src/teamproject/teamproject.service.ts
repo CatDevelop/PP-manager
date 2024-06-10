@@ -140,7 +140,7 @@ export class TeamprojectService {
                     let studentResults;
                     for (const resultsThematicGroup of results.thematicGroups) {
                         for (const resultsStudent of resultsThematicGroup.students) {
-                            if(resultsStudent.fullname === student.fullname) {
+                            if (resultsStudent.fullname === student.fullname) {
                                 studentResults = resultsStudent
                             }
                         }
@@ -191,8 +191,8 @@ export class TeamprojectService {
             })
         }
 
-        for(let studentResult of studentsResults) {
-            if(await this.studentProjectResultService.isCreateByIds(studentResult.student.userId, parseProjectDto.id)) {
+        for (let studentResult of studentsResults) {
+            if (await this.studentProjectResultService.isCreateByIds(studentResult.student.userId, parseProjectDto.id)) {
                 await this.studentProjectResultService.update(
                     studentResult.student.userId,
                     parseProjectDto.id,
@@ -227,7 +227,7 @@ export class TeamprojectService {
     async createReport(createReportDto: any) {
         let projects = await this.projectRepository.find({
             where: {
-               period: {id: 8}
+                period: {id: 8}
             },
             relations: {
                 period: true,
@@ -248,38 +248,55 @@ export class TeamprojectService {
         let workbook = XLSX.utils.book_new();
 
         let projectsSheet = {
-            '!ref': 'A1:I' + (projects.length + 1), // Sheet Range (Which cells will be included in the output)
+            '!ref': 'A1:L' + (projects.length + 1), // Sheet Range (Which cells will be included in the output)
             'A1': {
                 t: 's',
                 v: 'Паспорт',
             },
             'B1': {
                 t: 's',
-                v: 'Название',
+                v: 'Короткое название',
             },
             'C1': {
                 t: 's',
-                v: 'Участники',
+                v: 'Название для диплома',
             },
             'D1': {
                 t: 's',
-                v: 'Куратор',
-            },
+                v: 'Участники',
+            }
+            ,
             'E1': {
                 t: 's',
-                v: 'Отчёт',
+                v: 'Количество студентов',
             },
             'F1': {
                 t: 's',
-                v: 'Презентация',
+                v: 'Куратор',
             },
             'G1': {
                 t: 's',
-                v: 'Оценка комиссии',
+                v: 'Заказчик',
             },
             'H1': {
                 t: 's',
+                v: 'Отчёт',
+            },
+            'I1': {
+                t: 's',
+                v: 'Презентация',
+            },
+            'J1': {
+                t: 's',
+                v: 'Оценка комиссии',
+            },
+            'K1': {
+                t: 's',
                 v: 'Статус',
+            },
+            'L1': {
+                t: 's',
+                v: 'Ссылка на проект',
             }
         };
 
@@ -293,17 +310,20 @@ export class TeamprojectService {
             })
 
             projectsSheet["A" + (index + 2)] = {t: 's', v: project.passport?.uid || ""}
-            projectsSheet["B" + (index + 2)] = {t: 's', v: project.name}
-            projectsSheet["C" + (index + 2)] = {t: 's', v: students.join('\n')}
-            projectsSheet["D" + (index + 2)] = {t: 's', v: project.curator}
-            projectsSheet["E" + (index + 2)] = {t: 's', v: project.isHaveReport ? "Да" : "Нет"}
-            projectsSheet["F" + (index + 2)] = {t: 's', v: project.isHavePresentation ? "Да" : "Нет"}
-            projectsSheet["G" + (index + 2)] = {
+            projectsSheet["B" + (index + 2)] = {t: 's', v: project.passport?.short_name}
+            projectsSheet["С" + (index + 2)] = {t: 's', v: project.passport?.diploma_name}
+            projectsSheet["D" + (index + 2)] = {t: 's', v: students.join('\n')}
+            projectsSheet["E" + (index + 2)] = {t: 's', v: project.students.length}
+            projectsSheet["F" + (index + 2)] = {t: 's', v: project.curator}
+            projectsSheet["G" + (index + 2)] = {t: 's', v: project.passport.request.customer_user.customer_company.name}
+            projectsSheet["H" + (index + 2)] = {t: 's', v: project.isHaveReport ? "Да" : "Нет"}
+            projectsSheet["I" + (index + 2)] = {t: 's', v: project.isHavePresentation ? "Да" : "Нет"}
+            projectsSheet["J" + (index + 2)] = {
                 t: project.comissionScore ? 'n' : 's',
                 v: project.comissionScore || "Нет оценки"
             }
-            projectsSheet["H" + (index + 2)] = {t: 's', v: project.status}
-            projectsSheet["I" + (index + 2)] = {t: 's', v: "https://teamproject.urfu.ru/#/" + project.id + "/about"}
+            projectsSheet["K" + (index + 2)] = {t: 's', v: project.status}
+            projectsSheet["L" + (index + 2)] = {t: 's', v: "https://teamproject.urfu.ru/#/" + project.id + "/about"}
         })
 
         let students = []
