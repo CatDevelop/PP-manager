@@ -13,8 +13,8 @@ import ProjectsTableSettings from "../../components/ProjectsTableSettings/Projec
 import {removeStudent} from "../../../../store/slices/studentSlice";
 import {usePeriods} from "../../../../hooks/use-periods";
 import {getAllPeriods} from "../../../../store/slices/periodsSlice";
-import {removeAuth} from "../../../../store/slices/authSlice";
 import {unauthorizedHandler} from "../../../../core/utils/unauthorizedHandler";
+import ExportButton from "../../components/ExportButton/ExportButton";
 
 export const initialProjectsTableColumns = [
     {
@@ -110,14 +110,6 @@ export function TeamprojectProjectsPage() {
         })))
     }, [projects])
 
-    function selectElementContents() {
-        let table = document.getElementsByClassName(['ant-table-tbody'])[0];
-        let text = table.innerText.trim();
-        navigator.clipboard.writeText(text).catch(function () {
-        });
-    }
-
-
     return (
         <div className={styles.page}>
             <SideBar selectedKeys={["TeamprojectProjects"]}/>
@@ -146,6 +138,12 @@ export function TeamprojectProjectsPage() {
                 </div>
 
                 <div className={styles.buttons}>
+                    {
+                        periods.isLoading ?
+                            <Spin/> :
+                            <ExportButton
+                                periodId={periods.periods.find(period => period.year === year && period.term === term).id}/>
+                    }
                     <Button
                         onClick={() => setIsSettingsTableOpen(true)}
                     >

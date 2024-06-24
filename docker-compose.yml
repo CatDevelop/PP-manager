@@ -3,7 +3,7 @@ version: '3.8'
 services:
   pp_manager_server:
     build:
-      context: ./server
+      context: ./backend
       dockerfile: Dockerfile
     restart: always
     ports:

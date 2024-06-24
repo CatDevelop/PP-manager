@@ -43,7 +43,7 @@ export const createReport = createAsyncThunk(
     async function (data, {rejectWithValue, dispatch}) {
         try {
             let response = await fetch(
-                "http://94.241.139.33:5000/api/teamproject/report",
+                API.CREATE_REPORT,
                 {
                     method: 'post',
                     headers: {
@@ -59,8 +59,6 @@ export const createReport = createAsyncThunk(
             }
 
             response = await response.json()
-            // localStorage.setItem("PP-analyze-projects", JSON.stringify(response))
-            // dispatch(setTeamproject(response))
 
             return response;
         } catch (error) {

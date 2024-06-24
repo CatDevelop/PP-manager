@@ -23,6 +23,8 @@ const GET_MAIN_ANALYTICS = `${HOST}/analytic/main`;
 const PARSE_PROJECTS = `${HOST}/teamproject/parse`;
 const UPDATE_REQUEST = `${HOST}/request`;
 const UPDATE_PASSPORT = `${HOST}/passport`;
+const CREATE_REPORT = `${HOST}/teamproject/report`;
+const GET_REPORT = `${HOST}/static/`;
 
 const API = {
     USER,
@@ -46,7 +48,9 @@ const API = {
     GET_QUESTIONS,
     REMOVE_QUESTION,
     CREATE_QUESTION,
-    GET_QUESTION_SECTIONS
+    GET_QUESTION_SECTIONS,
+    CREATE_REPORT,
+    GET_REPORT
 };
 
 export default API;
